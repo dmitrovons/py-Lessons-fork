@@ -3,18 +3,19 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-    def Parse(self, aPath: str) -> str:
+    def Parse(self, aPath: str) -> dict:
         Query = urlparse(aPath).query
         if (Query == ''):
-            return 'Empty'
+            Res = {}
+        else:
+            Pairs = Query.split('&')
+            Res = dict(P.split('=') for P in Pairs)
+        return Res
 
-        Pairs = Query.split('&')
-        PairsDict = dict(P.split('=') for P in Pairs)
-
+    def GetDigitStr(self, aNum: str) -> str:
         Digits = ['Null', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
-        Num = PairsDict.get('num', '')
-        if (Num) and (len(Num) == 1):
-            Msg = Digits[int(Num)]
+        if (len(aNum) == 1):
+            Msg = Digits[int(aNum)]
         else:
             Msg = 'Unknown'
         return Msg
@@ -24,18 +25,28 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        Msg = self.Parse(self.path)
-        Body = "Query: %s, Digit: %s" % (self.path, Msg)
+        Query = self.Parse(self.path)
+        DigitStr = self.GetDigitStr(Query.get('num', '0'))
+        BgColor = Query.get('color', 'white')
+        RevStr = Query.get('rev', 'reverse')
+
         Page = """
         <html>
             </head>
+                <style>
+                    body {
+                        background-color: %s;
+                    }
+                </style>
                 <meta charset='utf-8'>
                 <title>Python HTTP server</title>
-                </head>
+            </head>
             <body>
-                %s
+                <h1>Color: %s</h1><br>
+                <h1>Digit: %s</h1><br>
+                <h1>Reverse: %s</h1><br>
             </body>
-        </html>""" % (Body)
+        </html>""" % (BgColor, BgColor, DigitStr, RevStr[::-1])
 
         self.wfile.write(Page.encode())
 
