@@ -2,7 +2,7 @@
 # Created: 28.09.2016
 # Vladimir Vons, VladVons@gmail.com
 
-User="VladVons"
+User="vladvons"
 Mail="vladvons@gmail.com"
 Url="https://github.com/$User/py-Lessons.git"
 
@@ -36,7 +36,7 @@ GitAuth()
 {
   Log "$0->$FUNCNAME"
 
-  sudo chown -R $USER .
+  #sudo chown -R $USER .
 
   # sign with eMail
   git config --global user.email $Mail
