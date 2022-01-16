@@ -28,7 +28,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         Query = self.ParseQuery(self.path)
-        ParaNum = self.GetDigitStr(Query.get('num', '0'))
+        ParaNum = self.GetDigitStr(Query.get('number', '0'))
         ParaColor = Query.get('color', 'white')
         ParaRever = Query.get('rever', 'Reverse string')
 
@@ -46,9 +46,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 <title>Python HTTP server</title>
             </head>
             <body>
-                <h1>Color: %s</h1><br>
-                <h1>Number: %s</h1><br>
-                <h1>Reverse: %s</h1><br>
+                <h1>color: %s</h1><br>
+                <h1>number: %s</h1><br>
+                <h1>rever: %s</h1><br>
                 <h1>Loads: %s</h1><br>
             </body>
         </html>""" % (ParaColor, ParaColor, ParaNum, ParaRever[::-1], self.CntLoad)
