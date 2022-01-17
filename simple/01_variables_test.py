@@ -14,6 +14,7 @@ f = 3.145
 #print("a + b = " + "a + b")
 #print("a + b = " + str(a + b))
 #print("a + b = %s. This is good" % (a + b))
-print("a + b = %s, a * b = %s, f = %f" % (a + b, a * b, f) )
+print(str(a) + "+" + str(b) + "=" + str(a + b))
+#print("a + b = %s, a * b = %s, f = %f" % (a + b, a * b, f) )
 
 
