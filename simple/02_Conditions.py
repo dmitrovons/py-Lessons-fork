@@ -29,7 +29,8 @@ c = (a == b)
 #else:
 #    print('Go to school')
 
-c = 1
+Numbers = ['Null', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine' ]
+c = -9
 if (c == 0):
     print('null')
 elif (c == 1):
@@ -53,5 +54,8 @@ elif (c == 9):
 else:
     print("good bye")
 
-Numbers = ['Null', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine' ]
-print (Numbers[])
+
+if (c <= len(Numbers)) and (c >= 0):
+    print (Numbers[c])
+else:
+    print("good bye")
