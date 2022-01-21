@@ -98,19 +98,3 @@ else:
 
 #print(113 % 2)
  
-c = 0
-while (c < 10):
-    l = c % 4
-    print(c, l)
-    #if (l == 0):
-    #    print(c , 'good', l)
-    #    #c += 1
-    #else:
-    #    print(c , 'bad', l)
-        #c += 1
-    c += 1
-
-for c in range(10):
-    l = c % 4
-    print(c, l)
- 

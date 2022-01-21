@@ -37,9 +37,6 @@ mon = 1
 thu = 2 
 print('good', sun, mon, thu)
 
-# best
-Sunday = 0
-Monday = 1
 THURSDAY = 2
 print('best', Sunday, Monday, THURSDAY)
 

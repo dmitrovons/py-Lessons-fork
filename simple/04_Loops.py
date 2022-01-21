@@ -12,12 +12,13 @@ Numbers = ['Null', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight
 #print(Numbers[8])
 #print(Numbers[9])
 
-a = False
-i = 0
-while (i < 10):
-    print(i, a)
-    i += 1
-    a = not a
+def Test0():
+    a = False
+    i = 0
+    while (i < 10):
+        print(i, a)
+        i += 1
+        a = not a
 
 Digits = [0, 1, 2, 3, 4, 5]
 #Digits = list(range(50))
@@ -95,11 +96,76 @@ Numbers = ['Null', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight
  #    D += 1
 
 
-D = 0
-L = len(Numbers) - 1 
-while (D <= L):
-     #print(str(D) + '+' + str(L-D) + '=' + str(D+L-D))
-     print('%s+%s=%s' %(D, L-D, D+(L-D)))
-     D += 1
+def Test1():
+    D = 0
+    L = len(Numbers) - 1 
+    while (D <= L):
+        #print(str(D) + '+' + str(L-D) + '=' + str(D+L-D))
+        print('%s+%s=%s' %(D, L-D, D+(L-D)))
+        D += 1
 
-print('The end')
+    print('The end')
+
+def Test2():
+    c = 0
+    while (c < 10):
+        l = c % 4
+        print(c, l)
+        #if (l == 0):
+        #    print(c , 'good', l)
+        #    #c += 1
+        #else:
+        #    print(c , 'bad', l)
+            #c += 1
+        c += 1
+
+def Test3():
+    for c in range(10):
+        l = c % 4
+        print(c, l)
+
+
+def Test4():
+    print('Hello1')
+    print('Hello1 Hello1')
+    print('Hello1 Hello1 Hello1')
+    print()
+
+    s = 'Hello2'
+    print(s)
+    print(s + ' ' + s)
+    print(s + ' ' + s + ' ' + s)
+    print()
+
+    s = ''
+    p = 'Hello3'
+    for b in range(3):
+        s += p + ' '
+        print(s)
+    print()
+
+    s = 'Hello4 '
+    #for i in range(3):
+    for i in [0, 1 , 2]:
+        print(i, s * (i + 1))
+    print()
+
+def Test5():
+    s = 'Hello5 '
+    for i in [2, 1, 0]:
+        print(i, s * (i + 1))
+
+def Test6():
+    s = 'Hello6 '
+    Count = 3
+    for i in range(Count):
+        print(i, s * (Count - i))
+
+   
+#Test1()
+#Test2()
+#Test3()
+#Test4()
+#Test5()
+#Test6()
+
