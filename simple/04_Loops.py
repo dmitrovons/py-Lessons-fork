@@ -1,3 +1,6 @@
+from ast import While
+
+
 Numbers = ['Null', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine' ]
 #print('Array length', len(Numbers))
 
@@ -161,11 +164,45 @@ def Test6():
     for i in range(Count):
         print(i, s * (Count - i))
 
-   
+
+#  10
+#  20
+# ...
+# 100
+def TestDmitro1():
+    c = 0
+    while(c < 100):
+        c += 10
+        print(c)
+
+#  10, 90
+#  20, 80
+# ...
+# 100, 0 
+def TestDmitro2():
+    c = 0
+    d = 100
+    while(c < 100):
+        c += 10
+        #d -= 10
+        print(c , d)
+
+def TestDavyd():
+    c = 100
+    while(c > 0):
+        print(c)
+        c -= 10
+
+
+
+        
+
 #Test1()
 #Test2()
 #Test3()
 #Test4()
 #Test5()
 #Test6()
-
+#TestDmitro1()
+TestDmitro2()
+#TestDavyd()
