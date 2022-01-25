@@ -55,7 +55,7 @@ elif (c == 9):
 else:
     print("bad 1")
 
-#c = -10
+c = 5
 #if (c <= 9):
 #if (c < 9) or (c == 9):
 if (c >= 0) and (c <= len(Numbers)):
