@@ -86,6 +86,30 @@ def Problem_12b():
             print(V)
 
 
+def Problem_13():
+    Arr = [12,6,2,3,15,8,13]
+    #print(min(Arr))
+    Res = None
+    i = 0
+    while (i < len(Arr)):
+        V = Arr[i]
+        if (Res == None) or (V > Res):
+            Res = V
+        i += 1    
+    print(Res)
+
+def Problem_13a():
+    Arr = [12,6,2,3,15,8,13]   
+    Res = float('inf')
+    i = 0
+    while (i < len(Arr)):
+        V = Arr[i]
+        if (V < Res):
+            Res = V
+        i += 1
+    print(Res)    
+
+
 #Problem_02a()
 #Problem_02b()
 
@@ -101,4 +125,5 @@ def Problem_12b():
 #Problem_11a(5)
 #Problem_12a()
 #Problem_12a()
-
+Problem_13()
+#Problem_13a()
