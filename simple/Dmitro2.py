@@ -1,4 +1,4 @@
-Arr = [2, 7, 1, 5, 3, 12, 18, 4, 16, 9]
+Arr = [2, 7, 1, 5, 3, 12, 18, 4, 16, 9, 7, 3]
 
 #виводить перших 3 числа
 def Problem01():
@@ -71,6 +71,46 @@ def Problem07b():
     Avr = d / len(Arr) 
     print(d, Avr, round(Avr))    
 
+def Problem08a(aArr, aFind):
+    Res = 0
+    i = 0
+    while(i < len(aArr)):
+        if (aArr[i] == aFind):
+            Res += 1
+        i += 1
+    return Res
+
+def Problem08a(aArr, aFind):
+    Res = 0
+    i = 0
+    while(i < len(aArr)):
+        if (aArr[i] == aFind):
+            Res += 1
+        i += 1
+    return Res
+
+def Problem08b(aArr, aFind):
+    Res = 0
+    for a in aArr:
+        if (a == aFind):
+            Res += 1
+    return Res
+
+def Problem08_SpeedTest(aArr, aFind, aCount):
+    import time
+
+    Start = time.time()
+    for a in range(aCount):
+        Problem08a(aArr, aFind)
+    Duration1 = time.time() - Start        
+
+    Start = time.time()
+    for a in range(aCount):
+        Problem08b(aArr, aFind)
+    Duration2 = time.time() - Start                
+
+    print('Problem08a', Duration1, 'Problem08b', Duration2, 'xTime', Duration1 /  Duration2)
+
 #Problem01()
 #Problem02()
 #Problem03()
@@ -79,3 +119,6 @@ def Problem07b():
 #Problem06()
 #Problem07a()
 #Problem07b()
+
+Arr1 = [2, 3, 7, 1, 5, 3, 12, 18, 3, 4, 3, 1, 16, 9, 7, 3, 3, 3]
+Problem08_SpeedTest(Arr1, 3, 100000)
