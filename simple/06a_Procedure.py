@@ -1,4 +1,5 @@
 def Replication(aMessage, aCount):
+
     for i in range(aCount):
         print(i, aMessage * (i + 1))
 
