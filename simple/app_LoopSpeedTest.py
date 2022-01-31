@@ -36,6 +36,7 @@ def Test_04(aArr, aFind):
     Res = aArr.count(aFind)
     return Res
 
+#---
 def SpeedFunc(aFunc, aArr, aFind, aCount):
     Start = time.time()
     for a in range(aCount):
@@ -47,5 +48,23 @@ def SpeedAll(aArr, aFind, aCount):
     for Method in Methods:
         SpeedFunc(Method, aArr, aFind, aCount)
 
+#---
+def _TimerDecor(aFunc):
+    def Wrapper(aArr, aFind):
+        Start = time.time()
+        Count = 1 * 1000000
+        for a in range(Count):
+            Res = aFunc(aArr, aFind)
+        print('Method: %s, Time: %0.2f, Found: %s' % (aFunc.__name__, time.time() - Start, Res))
+    return Wrapper
+
+@_TimerDecor
+def Test_04_Decor(aArr, aFind):
+    Test_03(aArr, aFind)
+
+
+#---
 Arr1 = [2, 3, 7, 1, 5, 3, 12, 18, 3, 4, 3, 1, 16, 9, 7, 3, 3]
-SpeedAll(Arr1, 3, 100000)
+
+SpeedAll(Arr1, 3, 1*1000000)
+#Test_04_Decor(Arr1, 3)
