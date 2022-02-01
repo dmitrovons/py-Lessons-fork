@@ -56,6 +56,7 @@ class TDict():
         print('%s -> %s' % (aFind, Word))           # вивести на екран що шукали і переклад
 
 
+print()
 Dict1 = TDict('app_dictionary_vlad.txt')            # створити клас
 Dict1.Load('->')                                    # завантажити словник 'зліва на право'
 Dict1.Find('three')                                 # пошук слова
