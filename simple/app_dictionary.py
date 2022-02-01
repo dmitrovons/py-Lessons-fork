@@ -2,6 +2,9 @@
 simple dictionary
 2022.02.01
 
+DigitDict = {'Null': 'Ноль', 'One': 'Один', 'Two': 'Два', 'Three': 'Три', 'Four': 'Чотири', 'Five': 'Пять', 'Six': 'Шість', 'Seven': 'Сім', 'Eight': 'Вісім', 'Nine': 'Девять'}
+
+
 open() відкрити файл
 split() розбити стрічку за роздільником
 strip() обрізати пробіли
@@ -12,7 +15,7 @@ class TDict():
     def __init__(self, aFileName: str):             # конструктор класу
         self.FileName: str = aFileName              # запамятати назву файлу
         Data: dict = {}                             # створення порожнього словника
-            
+
     def Load(self, aMode = '->') -> dict:
         self.Data = {}                              # створення порожнього словника
         with open(self.FileName, 'r') as hFile:     # відкрити файл для читання
