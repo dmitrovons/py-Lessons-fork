@@ -1,0 +1,15 @@
+Null=Ноль
+
+
+ One =    Один   
+Two = Два 
+Three = Три
+Four = Чотири
+Five = Пять
+Six = Шість
+Seven = Сім
+Eight = Вісім
+Nine = Девять
+Boy = Хлопець
+Girl = Дівчина
+Town = Місто

@@ -49,10 +49,20 @@ def Task5():
  
         i -= 1
     print ('end')
+
+    def Task6(aMsg: str, aIdx: int) -> str:
+    Arr = ["zero", "one", "two", "three"]
+    Idx = min(max(0, aIdx), len(Arr) - 1)
+    Res = "%s %s" % (aMsg, Arr[Idx])
+    return Res
+
+Res = Task6("Digit:", 2)
+print(Res)
+
         
 #Task1()
 #Task2()
 #Task3()
 #Task4()
-Task5()
-
+#Task5()
+Task6()
