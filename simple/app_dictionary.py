@@ -27,6 +27,7 @@ dog -> not found
 собака -> not found
 '''
 
+
 class TDict():
     def __init__(self, aFileName: str):             # конструктор класу викликається один раз при створенні класу
         self.FileName: str = aFileName              # запамятати назву файлу
