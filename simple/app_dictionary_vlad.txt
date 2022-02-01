@@ -1,6 +1,5 @@
 Null=Ноль
 
-
  One =    Один   
 Two = Два 
 Three = Три
@@ -13,3 +12,4 @@ Nine = Девять
 Boy = Хлопець
 Girl = Дівчина
 Town = Місто
+Smile
