@@ -11,10 +11,7 @@ import random
 
 
 class TSimpleDict():
-    def __init__(self):                                        # конструктор класу викликається один раз при створенні класу
-        print('Simple dictionary class, v1.01, 2022.02.01')
-        print('Current directory: ' + os.getcwd())
-
+    def __init__(self):                                         # конструктор класу викликається один раз при створенні класу
         self._Clear()
 
     def _Error(self, aMsg: str):                                # якщо процедура починається з підкреслення, то вона не видима за межами класу
@@ -31,6 +28,16 @@ class TSimpleDict():
         self.Dict1 = {}                                         # створення порожнього словника Eng
         self.Dict2 = {}                                         # створення порожнього словника Ukr
         self.SetDict(True)                                      # встановити словник за замовчуванням Eng
+
+    def _GetRand(self, aCount: int) -> list:
+        Keys = self.Dict.keys()                                 # отримати з словника список ключів
+        Count = min(aCount, len(Keys))                          # обмежити кількість слів до розміру словника
+        return random.sample(Keys, Count)                       # перемішати випадковим чином і вибрати потрібну кількість
+
+    def Info(self):
+        print('Simple dictionary class, v1.01, 2022.02.01')
+        print('Current directory: ' + os.getcwd())
+        print('Words: %d' % (self.GetSize()))
 
     def SetDict(self, aMode: bool):
         if (aMode):                                             # якщо істина, то встановлює основним словником англ, інакше укр
@@ -61,7 +68,7 @@ class TSimpleDict():
         print('%s -> %s' % (aWord, Translate))                  # вивести на екран що шукали і переклад
 
     def ShowAll(self):                                          # вивести всі слова просортовано
-        for Key, Value in self.Dict:                            # проходимо всі слова
+        for Key, Value in self.Dict.items():                    # проходимо всі слова
             print('%10s = %s' % (Key, Value))
 
     def Save(self, aFileName: str, aSort = True):               # записати просортовано у файл
@@ -95,35 +102,36 @@ class TSimpleDict():
         if (self.ErrCnt > 0):                                   # якщо є помилки то інформуємо
             print('Errors: %d' % (self.ErrCnt))
 
-        print('Words in dictionary: ' + str(self.GetSize()))
 
 
 class TLearnDict(TSimpleDict):
-    def _GetRand(self, aCount: int) -> list:
-        Keys = self.Dict.keys()                                 # отримати з словника список ключів
-        Count = min(aCount, len(Keys))                          # обмежити кількість слів до розміру словника
-        return random.sample(Keys, Count)                       # перемішати випадковим чином і вибрати потрібну кількість
-
     def ShowRand(self, aCount: int):
         Keys = self._GetRand(aCount)                            # отримати список випадкових слів
         for Key in Keys:                                        # вивести на акран
             print('%10s = %s' % (Key, self.Dict[Key])) 
 
     def Learn(self, aTips: int = 5, aCount: int = 10):
-        Praise = ['good', 'ok', 'nice', 'super', 'best', 'wow', 'bravo', 'smart', 'clever', 'amazing', 'top', 'well', 'cool']
+        Praise = ['good', 'ok', 'nice', 'super', 'best', 'wow', 'bravo', 'smart', 'clever', 'amazing', 'well', 'cool', 'beautiful', 'cute', 'charm', 'glamour', 'graceful', 'elegant']
 
+        SDictErr = TSimpleDict()
         aTips = min(len(self.Dict), aTips)
         Score = 0
         self.ErrCnt = 0
-        SDictErr = TSimpleDict()
 
         for Count in range(aCount):
-            Rand = random.randint(0, aTips - 1)
             Keys = self._GetRand(aTips)
+
+            if (SDictErr.GetSize() > 0):
+                KeyErr = SDictErr._GetRand(1)[0]
+                Rand = random.randint(0, aTips - 1)
+                Keys[Rand] = KeyErr
+
+            Rand = random.randint(0, aTips - 1)
             RandKey = Keys[Rand]
             RandValue = self._Find(RandKey)
 
-            print('\n-= %3d/%3d, Score: %d, Errors: %d =-' % (Count+1, aCount, Score, self.ErrCnt))
+            print()
+            print('-= %3d/%3d, Score: %d, Errors: %d =-' % (Count+1, aCount, Score, self.ErrCnt))
             for Idx, Key in enumerate(Keys):
                 print(Idx + 1, Key)
 
@@ -135,17 +143,16 @@ class TLearnDict(TSimpleDict):
                         Score += 1
                         print('%s. %s!' % (RandKey, Praise[random.randint(0, len(Praise) - 1)]))
                     else:
-                        Msg = 'correct answer: %s = %s' % (RandValue, RandKey)
+                        Msg = '%s = %s' % (RandValue, RandKey)
                         self._Error(Msg)
 
-                        SDictErr.SetWord(RandValue, RandKey)
+                        SDictErr.SetWord(RandKey, RandValue)
 
                         Score -= 3
                         if (Score < -10):
                             break
         print('\nGame over !')
 
-        print()
         if (SDictErr.GetSize() > 0):
             print('Your faults:')
             SDictErr.ShowAll()
@@ -189,10 +196,16 @@ def Learn():
     Dict = TLearnDict()
     Dict.Load('eng-ukr.dic')
 
+    print()
+    Dict.Info()
+
     Mode = bool(random.getrandbits(1))
     Dict.SetDict(Mode)
 
+    print('Random words:')
     Dict.ShowRand(10)
+
+    print()
     Dict.Learn()
 
 #Test()
