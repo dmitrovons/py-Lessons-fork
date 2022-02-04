@@ -8,7 +8,9 @@ def Learn():
     Dict = TLearnDict()
     #Dict.LoadFile('eng-ukr.dic')
     #Dict.LoadFile('eng-ukr-computer.dic')
-    Dict.LoadFiles(['eng-ukr.dic', 'eng-ukr-computer.dic'])
+
+    SetA = ['-eng-ukr.dic', 'eng-ukr-computer.dic']
+    Dict.LoadFiles(SetA)
 
     print()
     Dict.Info()
@@ -20,6 +22,6 @@ def Learn():
     Dict.ShowRand(10)
 
     print()
-    Dict.Learn()
+    Dict.Learn(5, 10)
 
 Learn()

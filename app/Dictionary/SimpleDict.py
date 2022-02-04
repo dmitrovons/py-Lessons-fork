@@ -115,7 +115,7 @@ class TLearnDict(TSimpleDict):
     def Learn(self, aTips: int = 5, aCount: int = 10):
         Praise = ['good', 'ok', 'nice', 'super', 'best', 'wow', 'bravo', 'smart', 'clever', 'amazing', 'well', 'cool', 'beautiful', 'cute', 'charm', 'glamour', 'graceful', 'elegant']
 
-        SDictErr = TSimpleDict()
+        SDErr = TSimpleDict()
         aTips = min(len(self.Dict), aTips)
         Score = 0
         self.ErrCnt = 0
@@ -123,8 +123,8 @@ class TLearnDict(TSimpleDict):
         for Count in range(aCount):
             Keys = self._GetRand(aTips)
 
-            if (SDictErr.GetSize() > 0):
-                KeyErr = SDictErr._GetRand(1)[0]
+            if (SDErr.GetSize() > 0):
+                KeyErr = SDErr._GetRand(1)[0]
                 Rand = random.randint(0, aTips - 1)
                 Keys[Rand] = KeyErr
 
@@ -148,7 +148,7 @@ class TLearnDict(TSimpleDict):
                         Msg = '%s = %s' % (RandValue, RandKey)
                         self._Error(Msg)
 
-                        SDictErr.SetWord(RandKey, RandValue)
+                        SDErr.SetWord(RandKey, RandValue)
 
                         Score -= 3
                         if (Score < -10):
@@ -159,8 +159,8 @@ class TLearnDict(TSimpleDict):
 
         print('\nGame over')
 
-        if (SDictErr.GetSize() > 0):
+        if (SDErr.GetSize() > 0):
             print('Your faults:')
-            SDictErr.ShowAll()
+            SDErr.ShowAll()
         else:
             print('You have no errors !')
