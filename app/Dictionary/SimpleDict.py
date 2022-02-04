@@ -113,7 +113,7 @@ class TLearnDict(TSimpleDict):
             print('%10s = %s' % (Key, self.Dict[Key])) 
 
     def Learn(self, aTips: int = 5, aCount: int = 10):
-        Praise = ['good', 'ok', 'nice', 'super', 'best', 'wow', 'bravo', 'smart', 'clever', 'amazing', 'well', 'cool', 'beautiful', 'cute', 'charm', 'glamour', 'graceful', 'elegant']
+        Praise = ['good', 'ok', 'nice', 'super', 'best', 'wow', 'bravo', 'smart', 'clever', 'amazing', 'well', 'cool', 'beautiful', 'cute', 'charm', 'graceful']
 
         SDErr = TSimpleDict()
         aTips = min(len(self.Dict), aTips)
@@ -163,4 +163,5 @@ class TLearnDict(TSimpleDict):
             print('Your faults:')
             SDErr.ShowAll()
         else:
-            print('You have no errors !')
+            print('You have no errors :)')
+            print('! '.join(Praise) + '!')
