@@ -6,28 +6,39 @@ class TPerson():
     def __init__(self): 
         self.Name: str = ''
         self.Age: int  = 0
-        self.Male = None
+        self.Male: bool = None
         self.Height: int = 0
         self.Weight: int = 0
         self.Friends = []
 
-    def Init(self, aName: str, aAge: int, aMale: bool, aHeight: int, aWeight: int): 
+        #ToDo
+        #BirthDay
+
+    def Init(self, aName: str, aAge: int, aMale: bool, aHeight: int, aWeight: int):
         self.Name = aName
         self.Age = aAge
         self.Male = aMale
         self.Height = aHeight
         self.Weight = aWeight
 
-    def AddFriend(self, aPerson):
-        self.Friends.append(aPerson)
-        aPerson.Friends.append(self)
+    def AddFriend(self, aPerson: 'TPerson'):
+        if (not aPerson in self.Friends):
+            self.Friends.append(aPerson)
+            aPerson.Friends.append(self)
+        else:
+            print('already friend with ' + aPerson.Name)
 
+    #ToDo
+    #def ShowFriends(self):
+    #    pass
+ 
     def Info(self): 
         print('Name: ' +  self.Name)
         print('Age: ' +  str(self.Age))
         print('Male: %s' %  (self.Male))
         print('Height: %s' %  (self.Height))
         print('Weight: %s' %  (self.Weight))
+
         for Friend in self.Friends:
             print('Friend: %s' %  (Friend.Name))
 
@@ -66,5 +77,5 @@ Student1.AddFriend(Person1)
 Student1.Info()
 
 print()
+Person1.AddFriend(Student1)
 Person1.Info()
-
