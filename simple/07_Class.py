@@ -1,6 +1,7 @@
 import time
 import datetime
 
+
 class TPerson():
     def __init__(self): 
         self.Name: str = ''
@@ -38,7 +39,7 @@ class TStudent(TPerson):
         self.Class: str  = ''
 
     def Info(self): 
-        super().Info()        
+        super().Info()
         print('School: %s' %  (self.School))    
         print('Class: %s' %  (self.Class))
 
