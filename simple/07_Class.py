@@ -30,7 +30,8 @@ class TPerson():
 
     #ToDo
     #def ShowFriends(self):
-    #    pass
+    #def IsTeenAge
+
  
     def Info(self): 
         print('Name: ' +  self.Name)
