@@ -195,8 +195,11 @@ def TestDavyd():
 
 
 
-        
-
+def TestDmytro(): 
+    #for i in [1,2,3,4,5,6,7,8,9]: 
+    for i in range(0, 1000, 50): 
+        print(i)
+    
 #Test1()
 #Test2()
 #Test3()
@@ -206,3 +209,4 @@ def TestDavyd():
 #TestDmitro1()
 #TestDmitro2()
 #TestDavyd()
+TestDmytro()

@@ -9,7 +9,7 @@ class TPerson():
         self.Male: bool = None
         self.Height: int = 0
         self.Weight: int = 0
-        self.Friends = []
+        self.Friends: list = []
 
         #ToDo
         #BirthDay
@@ -22,16 +22,19 @@ class TPerson():
         self.Weight = aWeight
 
     def AddFriend(self, aPerson: 'TPerson'):
-        if (not aPerson in self.Friends):
-            self.Friends.append(aPerson)
-            aPerson.Friends.append(self)
+        print('Adding a friend %s for %s' % (aPerson.Name, self.Name))
+        if (self != aPerson):
+            if (aPerson not in self.Friends):
+                self.Friends.append(aPerson)
+                aPerson.Friends.append(self)
+                print('УРА МИ ДРУЗІ')
+            else:
+                print('you are already a friend with %s' % (self.Name))
         else:
-            print('already friend with ' + aPerson.Name)
-
+            print('You cant be a friend with yourself')
+        
     #ToDo
     #def ShowFriends(self):
-    #def IsTeenAge
-
  
     def Info(self): 
         print('Name: ' +  self.Name)
@@ -42,6 +45,13 @@ class TPerson():
 
         for Friend in self.Friends:
             print('Friend: %s' %  (Friend.Name))
+
+    def IsTeenAge(self):
+        if (self.Age >= 13) and (self.Age <= 19):
+            print('%s Is TeenAger' % (self.Name))
+        else:
+            print('%s Is Not TeenAger' % (self.Name))
+
 
 class TStudent(TPerson):
     def __init__(self): 
@@ -56,27 +66,47 @@ class TStudent(TPerson):
         print('Class: %s' %  (self.Class))
 
 
-Person1 = TPerson()
-Person1.Name = 'Davyd'
-Person1.Age = 13
-Person1.Male = True
-Person1.Height = 180
-Person1.Weight = 50
-Person1.Info()
+def Test1():
+    Person1 = TPerson()
+    Person1.Name = 'Davyd'
+    Person1.Age = 13
+    Person1.Male = True
+    Person1.Height = 180
+    Person1.Weight = 50
+    Person1.Info()
 
-print()
-Person2 = TPerson()
-Person2.Init('Dmytro', 14, True, 181, 60)
-Person2.Info()
+    print()
+    Person2 = TPerson()
+    Person2.Init('Dmytro', 14, True, 181, 60)
+    Person2.Info()
 
-print()
-Student1 = TStudent()
-Student1.Init('Yaroslav', 21, True, 191, 96)
-Student1.School = 'SH-24'
-Student1.Class = '11A'
-Student1.AddFriend(Person1)
-Student1.Info()
+    print()
+    Student1 = TStudent()
+    Student1.Init('Yaroslav', 21, True, 191, 96)
+    Student1.School = 'SH-24'
+    Student1.Class = '11A'
+    Student1.Add    #def IsTeenAge
 
-print()
-Person1.AddFriend(Student1)
-Person1.Info()
+    print()
+    Person1.AddFriend(Student1)
+    Person1.Info()
+
+
+def Test2():
+    print()
+    P1 = TPerson()
+    P1.Init('Davyd', 13, True, 180, 50)
+    P1.IsTeenAge()
+    P1.Info()
+
+    print()
+    P2 = TPerson()
+    P2.Init('Dmytro', 14, True, 181, 60)
+    P2.IsTeenAge()
+    P2.AddFriend(P1)
+    P2.AddFriend(P1)    
+    P2.AddFriend(P2)    
+    P2.Info()
+
+#Test1()
+Test2()
