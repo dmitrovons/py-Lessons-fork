@@ -33,18 +33,31 @@ class TPerson():
         else:
             print('You cant be a friend with yourself')
         
-    #ToDo
-    #def ShowFriends(self):
+    def ShowFriends(self):
+        Len = len(self.Friends) 
+        if (Len == 0):
+            print('You have no friends')
+        elif (Len == 1):
+            print('Friend: %s' % (Len))
+            print('Friend: %s' %  (self.Friends[0].Name))
+        else:
+            print('Friends: %s' % (Len))
+            #for F in self.Friends:
+            #    print('Friend: %s' %  (F.Name))
+
+            i = 0
+            while(i < Len):
+                Person = self.Friends[i]
+                print('Friend: %s %s %s' % (Person.Name, Person.Age, Person.Weight))
+                i += 1
  
     def Info(self): 
-        print('Name: ' +  self.Name)
-        print('Age: ' +  str(self.Age))
-        print('Male: %s' %  (self.Male))
-        print('Height: %s' %  (self.Height))
-        print('Weight: %s' %  (self.Weight))
-
-        for Friend in self.Friends:
-            print('Friend: %s' %  (Friend.Name))
+        print('Name   : %s' % (self.Name))
+        print('Age    : %s' % (self.Age))
+        print('Male   : %s' %  (self.Male))
+        print('Height : %s' %  (self.Height))
+        print('Weight : %s' %  (self.Weight))
+        self.ShowFriends()
 
     def IsTeenAge(self):
         if (self.Age >= 13) and (self.Age <= 19):
@@ -100,12 +113,19 @@ def Test2():
     P1.Info()
 
     print()
+    S1 = TStudent()
+    S1.Init('Yaroslav', 21, True, 191, 96)
+    S1.School = 'SH-24'
+    S1.Class = '11A'
+
+    print()
     P2 = TPerson()
     P2.Init('Dmytro', 14, True, 181, 60)
     P2.IsTeenAge()
     P2.AddFriend(P1)
     P2.AddFriend(P1)    
     P2.AddFriend(P2)    
+    P2.AddFriend(S1)    
     P2.Info()
 
 #Test1()
