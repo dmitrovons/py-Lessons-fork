@@ -2,6 +2,21 @@ import time
 import datetime
 
 
+'''
+#ToDo
+#self.BirthDay = datetime.date(2019, 12, 4)
+#date.weekday()
+#self.Father
+#self.Mother
+
+Now = datetime.datetime.now()
+BirthDay = datetime.date(1971, 8, 19)
+Date1 = datetime.date(Now.year, BirthDay.month, BirthDay.day)
+Date2 = datetime.date(Now.year, Now.month, Now.day)
+print(Date1 - Date2)
+'''
+
+
 class TPerson():
     def __init__(self): 
         self.Name: str = ''
@@ -12,10 +27,6 @@ class TPerson():
         self.Weight: int = 0
         self.Friends: list = []
 
-        #ToDo
-        #self.BirthDay = datetime.date(2019, 12, 4)
-        #self.Father
-        #self.Mother
 
 
     def Init(self, aName: str, aAge: int, aMale: bool, aHeight: int, aWeight: int):
@@ -146,3 +157,5 @@ def Test2():
 
 #Test1()
 Test2()
+
+
