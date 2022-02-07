@@ -5,6 +5,7 @@ import datetime
 class TPerson():
     def __init__(self): 
         self.Name: str = ''
+        self.BirthDay = None
         self.Age: int  = 0
         self.Male: bool = None
         self.Height: int = 0
@@ -12,7 +13,10 @@ class TPerson():
         self.Friends: list = []
 
         #ToDo
-        #BirthDay
+        #self.BirthDay = datetime.date(2019, 12, 4)
+        #self.Father
+        #self.Mother
+
 
     def Init(self, aName: str, aAge: int, aMale: bool, aHeight: int, aWeight: int):
         self.Name = aName
@@ -22,17 +26,18 @@ class TPerson():
         self.Weight = aWeight
 
     def AddFriend(self, aPerson: 'TPerson'):
-        print('Adding a friend %s for %s' % (aPerson.Name, self.Name))
+        print('Adding a friend %s (%s) for %s (%s)' % (aPerson.Name, aPerson.Age, self.Name, self.Age))
+
         if (self != aPerson):
-            if (aPerson not in self.Friends):
+            if (not aPerson in self.Friends):
                 self.Friends.append(aPerson)
                 aPerson.Friends.append(self)
                 print('УРА МИ ДРУЗІ')
             else:
-                print('you are already a friend with %s' % (self.Name))
+                print('%s is already a friend with %s' % (aPerson.Name, self.Name))
         else:
-            print('You cant be a friend with yourself')
-        
+            print('Hey %s! You cant be a friend with yourself' % (self.Name))
+
     def ShowFriends(self):
         Len = len(self.Friends) 
         if (Len == 0):
@@ -42,14 +47,25 @@ class TPerson():
             print('Friend: %s' %  (self.Friends[0].Name))
         else:
             print('Friends: %s' % (Len))
-            #for F in self.Friends:
-            #    print('Friend: %s' %  (F.Name))
 
-            i = 0
-            while(i < Len):
-                Person = self.Friends[i]
-                print('Friend: %s %s %s' % (Person.Name, Person.Age, Person.Weight))
-                i += 1
+            #i = 0
+            #while(i < Len):
+            #    Person = self.Friends[i]
+            #    print('Friend: %s %s %s' % (Person.Name, Person.Age, Person.Weight))
+            #    i += 1
+
+            for F in self.Friends:
+                print('Friend: %s %s %s' % (F.Name, F.Age, F.Weight))
+
+    def Marry(self):
+        # Mary with friend
+        pass
+
+    def IsAdult(self):
+        pass
+
+    def GetAge(self):
+        pass
  
     def Info(self): 
         print('Name   : %s' % (self.Name))
