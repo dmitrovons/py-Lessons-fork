@@ -26,8 +26,7 @@ class TPerson():
         self.Height: int = 0
         self.Weight: int = 0
         self.Friends: list = []
-
-
+        self.Family = None
 
     def Init(self, aName: str, aAge: int, aMale: bool, aHeight: int, aWeight: int):
         self.Name = aName
@@ -68,23 +67,44 @@ class TPerson():
             for F in self.Friends:
                 print('Friend: %s %s %s' % (F.Name, F.Age, F.Weight))
 
-    def Marry(self):
+    def Marry(self, aPerson: 'TPerson'):
         # Mary with friend
-        pass
-
+        if (self != aPerson):
+            if (self.Male != aPerson.Male):
+                #if (self.Age >= 18) and (aPerson.Age >= 18):
+                if (self.IsAdult()) and (aPerson.IsAdult()):
+                    if (self.Family == None):
+                        self.Family = aPerson
+                        aPerson.Family = self
+                    else:
+                        print('You are married. Cant divorce')
+                else:
+                     print('You are too young')
+            else:
+                print('You have same State! Cant marry %s with %s' % (self.Name, aPerson.Name))
+                
     def IsAdult(self):
-        pass
+        if (self.Age >= 18):
+            return True
+        else:
+            return False    
 
     def GetAge(self):
         pass
  
     def Info(self): 
+        print()
         print('Name   : %s' % (self.Name))
         print('Age    : %s' % (self.Age))
         print('Male   : %s' %  (self.Male))
         print('Height : %s' %  (self.Height))
         print('Weight : %s' %  (self.Weight))
+
+        if (self.Family != None):
+            print('Family : %s' %  (self.Family.Name))
+
         self.ShowFriends()
+
 
     def IsTeenAge(self):
         if (self.Age >= 13) and (self.Age <= 19):
@@ -133,19 +153,16 @@ def Test1():
 
 
 def Test2():
-    print()
     P1 = TPerson()
     P1.Init('Davyd', 13, True, 180, 50)
     P1.IsTeenAge()
     P1.Info()
 
-    print()
     S1 = TStudent()
     S1.Init('Yaroslav', 21, True, 191, 96)
     S1.School = 'SH-24'
     S1.Class = '11A'
 
-    print()
     P2 = TPerson()
     P2.Init('Dmytro', 14, True, 181, 60)
     P2.IsTeenAge()
@@ -153,7 +170,15 @@ def Test2():
     P2.AddFriend(P1)    
     P2.AddFriend(P2)    
     P2.AddFriend(S1)    
-    P2.Info()
+
+    P3 = TPerson()
+    P3.Init('Ganna', 20, False, 165, 50)
+    S1.Marry(P3)
+    S1.Info()
+
+    P3.Marry(P1)
+
+
 
 #Test1()
 Test2()
