@@ -12,35 +12,50 @@ BirthDay = datetime.date(1971, 8, 19)
 Date1 = datetime.date(Now.year, BirthDay.month, BirthDay.day)
 Date2 = datetime.date(Now.year, Now.month, Now.day)
 print(Date1 - Date2)
-'''
 
 class TEnimal():
     def __init__(self): 
         self.Name: str = ''
         self.Age: int  = 0
-        self.Male: bool = None
+        self.Gender: bool = None
         self.Height: int = 0
         self.Weight: int = 0
+'''
 
-class TPerson(TEnimal):
-    def __init__(self): 
-        super().__init__()
+class TPerson():
+    def __init__(self, aName: str, aGender: bool):
+        self.Name: str = aName
+        self.Gender: bool = aGender
+
         #self.BirthDay = None
+        self.Age: int  = 0
+        self.Height: int = 0
+        self.Weight: int = 0
         self.Friends: list = []
+        self.Kids: list = []
         self.Family = None
         self.Father = None
         self.Mother = None
 
-    def Init(self, aName: str, aAge: int, aMale: bool, aHeight: int, aWeight: int):
-        self.Name = aName
+    def Init(self, aAge: int, aHeight: int, aWeight: int):
         self.Age = aAge
-        self.Male = aMale
         self.Height = aHeight
         self.Weight = aWeight
 
+    def AddKid(self, aPerson: 'TPerson'):
+        print('Adding a kid %s for %s ' % (aPerson.Name, self.Name))
+        if (self != aPerson):
+            if (aPerson not in self.Kids):
+                self.Kids.append(aPerson)
+                aPerson.Father = self
+            else:
+                print('%s has already father %s' % (aPerson.Name, self.Name))
+        else:
+            print('Hey %s! You cant be a father with yourself' % (self.Name))
+
+        
     def AddFriend(self, aPerson: 'TPerson'):
         print('Adding a friend %s (%s) for %s (%s)' % (aPerson.Name, aPerson.Age, self.Name, self.Age))
-
         if (self != aPerson):
             if (not aPerson in self.Friends):
                 self.Friends.append(aPerson)
@@ -71,43 +86,62 @@ class TPerson(TEnimal):
                 print('Friend: %s %s %s' % (F.Name, F.Age, F.Weight))
 
     def MarryA(self, aPerson: 'TPerson'):
-            print ('%s and %s are going to be maried' % (self.Name, aPerson.Name))
-            # Mary with friend
-            if (self != aPerson):
-                if (self.Male != aPerson.Male):
-                    if (self.Family != aPerson):
-                        if (self in aPerson.Friends) and (aPerson in self.Friends):
-                            #if (self.Age >= 18) and (aPerson.Age >= 18):
-                            if (self.IsAdult()) and (aPerson.IsAdult()):
-                                if (self.Family == None):
-                                    self.Family = aPerson
-                                    aPerson.Family = self
-                                else:
-                                    print('%s is married with %s. Cant divorce' % (self.Name, aPerson.Name))
-                        else:
-                            print('%s is not a friend to %s' % (self.Name, aPerson.Name))
+        print ('%s and %s are going to be maried' % (self.Name, aPerson.Name))
+        # Mary with friend
+        if (self != aPerson):
+            if (self.Gender != aPerson.Gender):
+                if (self.Family != aPerson):
+                    if (self in aPerson.Friends) and (aPerson in self.Friends):
+                        #if (self.Age >= 18) and (aPerson.Age >= 18):
+                        if (self.IsAdult()) and (aPerson.IsAdult()):
+                            if (self.Family == None):
+                                self.Family = aPerson
+                                aPerson.Family = self
+                            else:
+                                print('%s is married with %s. Cant divorce' % (self.Name, aPerson.Name))
                     else:
-                        print('%s is meried with %s' % (self.Name, aPerson.Name))               
+                        print('%s is not a friend to %s' % (self.Name, aPerson.Name))
                 else:
-                     print('%s is too young. Only %s years' % (self.Name, self.Age))
+                    print('%s is meried with %s' % (self.Name, aPerson.Name))               
             else:
-                print('%s has same state as %s ! Cant marry' % (self.Name, aPerson.Name))
+                    print('%s is too young. Only %s years' % (self.Name, self.Age))
+        else:
+            print('%s has same state as %s ! Cant marry' % (self.Name, aPerson.Name))
 
     def MarryB(self, aPerson: 'TPerson') -> bool:
-            print ('%s and %s are going to be maried' % (self.Name, aPerson.Name))
+        print ('%s and %s are going to be maried' % (self.Name, aPerson.Name))
 
-            if (self == aPerson):
-                print('%s, You cant marry with yourself' % (self.Name))
-                return False
+        if (self == aPerson):
+            print('%s, You cant marry with yourself' % (self.Name))
+            return False
 
-            if (self.Male == aPerson.Male):
-                print('%s has same state as %s ! Cant marry' % (self.Name, aPerson.Name))                
-                return False
+        if (self.Gender == aPerson.Gender):
+            print('%s has same state as %s ! Cant marry' % (self.Name, aPerson.Name))                
+            return False
 
-            if (self.Family == aPerson):
-                print('%s is meried with %s' % (self.Name, aPerson.Name))
-                return False
+        if (self.Family == aPerson):
+            print('%s is meried with %s' % (self.Name, aPerson.Name))
+            return False
 
+        if (not self in aPerson.Friends) and (not aPerson in self.Friends):
+            print('%s is not a friend to %s' % (self.Name, aPerson.Name))
+            return False
+
+        if (self.IsAdult()) and (aPerson.IsAdult()):
+            print('%s is not a friend to %s' % (self.Name, aPerson.Name))
+            return False
+        
+        if (self.Family != None):
+            print('%s is married with %s. Cant divorce' % (self.Name, aPerson.Name))
+            return False
+
+        self.Family = aPerson
+        aPerson.Family = self
+        return True
+
+    def Marry(self, aPerson: 'TPerson'):
+        #self.MarryA(aPerson)
+        self.MarryB(aPerson)
 
     def IsAdult(self):
         # ToDo
@@ -123,9 +157,12 @@ class TPerson(TEnimal):
         print()
         print('Name   : %s' % (self.Name))
         print('Age    : %s' % (self.Age))
-        print('Male   : %s' %  (self.Male))
+        print('Gender : %s' %  (self.Gender))
         print('Height : %s' %  (self.Height))
         print('Weight : %s' %  (self.Weight))
+
+        if (self.Father != None):
+            print('Father : %s' %  (self.Father.Name))
 
         if (self.Family != None):
             print('Family : %s' %  (self.Family.Name))
@@ -141,8 +178,8 @@ class TPerson(TEnimal):
 
 
 class TStudent(TPerson):
-    def __init__(self): 
-        super().__init__()
+    def __init__(self, aName: str, aGender: bool): 
+        super().__init__(aName, aGender)
 
         self.School: str = ''
         self.Class: str  = ''
@@ -157,7 +194,7 @@ def Test1():
     Person1 = TPerson()
     Person1.Name = 'Davyd'
     Person1.Age = 13
-    Person1.Male = True
+    Person1.Gender = True
     Person1.Height = 180
     Person1.Weight = 50
     Person1.Info()
@@ -180,29 +217,34 @@ def Test1():
 
 
 def Test2():
-    Davyd = TPerson()
-    Davyd.Init('Davyd', 13, True, 180, 50)
+    Davyd = TPerson('Davyd', True)
+    Davyd.Init(13,  180, 50)
 
-    Yaroslav = TStudent()
-    Yaroslav.Init('Yaroslav', 21, True, 191, 96)
+    Yaroslav = TStudent('Yaroslav', True)
+    Yaroslav.Init(21, 191, 96)
     Yaroslav.School = 'SH-24'
     Yaroslav.Class = '11A'
 
-    Dmytro = TPerson()
-    Dmytro.Init('Dmytro', 14, True, 181, 60)
+    Dmytro = TPerson('Dmytro', True)
+    Dmytro.Init(14, 181, 60)
     Dmytro.AddFriend(Davyd)
     Dmytro.AddFriend(Davyd)    
     Dmytro.AddFriend(Dmytro)    
     Dmytro.AddFriend(Yaroslav)    
 
-    Ganna = TPerson()
-    Ganna.Init('Ganna', 20, False, 165, 50)
+    Ganna = TPerson('Ganna', False)
+    Ganna.Init(20, 165, 50)
     Yaroslav.AddFriend(Ganna)
-    Yaroslav.MarryA(Ganna)
-    Ganna.MarryA(Yaroslav)
-    
-    Vlad = TPerson()
-    Vlad.Init('Vlad', 50, True, 184, 85)
+    Yaroslav.Marry(Ganna)
+    Ganna.Marry(Yaroslav)
+    Ganna.Marry(Yaroslav)    
+    Ganna.Info()
+
+    Vlad = TPerson('Vlad', True)
+    Vlad.Init(50, 184, 85)
+    Vlad.AddKid(Davyd)
+
+    Davyd.Info()
 
     print()
     Persons = [Davyd, Yaroslav, Dmytro, Ganna, Vlad]
