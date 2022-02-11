@@ -31,7 +31,7 @@ class TPlayerTask():
             Res[Player].append(Task)
 
         for Idx, Task in enumerate(Res):
-            print('Player %s, Tasks %s' % (Idx + 1, Task))
+            print('Player %s, Tasks %s' % (Idx + 1, sorted(Task)))
 
 def PrintB(aStart, aEnd, aPlayers):
     Arr = range(aStart, aEnd)
@@ -43,7 +43,7 @@ def PrintB(aStart, aEnd, aPlayers):
         Res[Player].append(Task)
 
     for Idx, Task in enumerate(Res):
-        print('Player %s, Tasks %s' % (Idx + 1, Task))
+        print('Player %s, Tasks %s' % (Idx + 1, sorted(Task)))
 
 
 #PlayerTask = TPlayerTask(1, 16, 3)
