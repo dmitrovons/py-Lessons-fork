@@ -1,3 +1,6 @@
+#!/usr/bin/python3 -B
+
+
 '''
 Python lesson
 Simple pygame example
