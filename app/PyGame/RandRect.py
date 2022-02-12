@@ -15,8 +15,21 @@ import pygame
 import random
 
 
-def GetColorRand():
-    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+class TColor():
+    def __init__(self, aStep: int = 64):
+        self.Values = [i for i in range(0, 255, aStep)]
+        self.Values.append(255)
+        self.Values *= 2
+
+    def GetRandSolid(self) -> tuple:
+        random.shuffle(self.Values)
+        Res = tuple(self.Values[:3])
+        return Res
+
+    def GetRand() -> tuple:
+        return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+gColor = TColor(128)
 
 
 class TOptions():
@@ -52,7 +65,7 @@ class TGame():
             Obj.Width = random.randint(self.Options.ObjMinSize, self.Options.ObjMaxSize)
             Obj.Height = random.randint(self.Options.ObjMinSize, self.Options.ObjMaxSize)
             Obj.Speed = random.randint(2, self.Options.ObjMaxSpeed)
-            Obj.Color = GetColorRand()
+            Obj.Color = gColor.GetRandSolid()
 
             X = random.randint(self.Options.DeadLineX, self.Options.ScreenWidth)
             Y = random.randint(self.Options.DeadLineX, self.Options.ScreenHeight)
@@ -67,7 +80,7 @@ class TGame():
 
     def ShowText(self, aPos: tuple, aMsg: str):
         Font = pygame.font.SysFont('Comic Sans MS', 50)
-        TextR = Font.render(aMsg, False, GetColorRand())
+        TextR = Font.render(aMsg, False, gColor.GetRandSolid())
         self.ScreenSurf.blit(TextR, aPos)
 
     def Run(self):
@@ -93,7 +106,7 @@ class TGame():
                         IsRun = False
                     elif (event.key == pygame.K_r):
                         self.Objects_SetRand()
-                        self.Options.BgColor = GetColorRand()
+                        self.Options.BgColor = gColor.GetRandSolid()
                         print('Event key', chr(event.key), len(self.Objects))
                     elif (event.key == pygame.K_t):
                         self.Objects_Add(self.Options.ObjInc)
