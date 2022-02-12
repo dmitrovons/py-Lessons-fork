@@ -211,7 +211,6 @@ class TBullet(TEllipse):
 
                 self.Game.Objects.remove(Obj)
 
-
 def Run():
     Options = TOptions()
     Options.Color = (150, 150, 50)
