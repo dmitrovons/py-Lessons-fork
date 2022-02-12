@@ -1,5 +1,7 @@
 import time
 import datetime
+from typing import NamedTuple
+
 
 
 '''
@@ -17,7 +19,7 @@ Date2 = datetime.date(Now.year, Now.month, Now.day)
 print(Date1 - Date2)
 
 class TEnimal():
-    def __init__(self): 
+    def __init__(self):
         self.Name: str = ''
         self.Age: int  = 0
         self.Gender: bool = None
@@ -26,6 +28,9 @@ class TEnimal():
 '''
 
 Persons: list = []
+
+
+
 
 class TPerson():
     def __init__(self, aName: str, aGender: bool):
@@ -48,7 +53,7 @@ class TPerson():
             if (not aPerson in self.Kids):
                 self.Kids.append(aPerson)
                 aPerson.Father = self
-                print('Added')                
+                print('Added')
             else:
                 print('%s has already kid %s' % (self.Name, aPerson.Name))
         else:
@@ -67,7 +72,7 @@ class TPerson():
             print('Hey %s! You cant be a friend with yourself' % (self.Name))
 
     def ShowFriends(self):
-        Len = len(self.Friends) 
+        Len = len(self.Friends)
         if (Len == 0):
             print('You have no friends')
         elif (Len == 1):
@@ -102,7 +107,7 @@ class TPerson():
                     else:
                         print('%s is not a friend to %s' % (self.Name, aPerson.Name))
                 else:
-                    print('%s is meried with %s' % (self.Name, aPerson.Name))               
+                    print('%s is meried with %s' % (self.Name, aPerson.Name))
             else:
                     print('%s is too young. Only %s years' % (self.Name, self.Age))
         else:
@@ -120,7 +125,7 @@ class TPerson():
             return False
 
         if (self.Gender == aPerson.Gender):
-            print('%s has same state as %s ! Cant marry' % (self.Name, aPerson.Name))                
+            print('%s has same state as %s ! Cant marry' % (self.Name, aPerson.Name))
             return False
 
         if (self.Marrieds != None):
@@ -148,12 +153,12 @@ class TPerson():
         if (self.Age >= 18):
             return True
         else:
-            return False    
+            return False
 
     def GetAge(self):
         pass
- 
-    def Info(self): 
+
+    def Info(self):
         print()
         print('Name   : %s' % (self.Name))
         print('Age    : %s' % (self.Age))
@@ -183,7 +188,7 @@ def Test1():
 
     print()
     Person2 = TPerson('Dmytro', True)
-    Person2.Age = 14    
+    Person2.Age = 14
     Person2.Info()
 
     print()
@@ -204,16 +209,16 @@ def Test2():
     Dmytro = TPerson('Dmytro', True)
     Dmytro.Age = 14
     Dmytro.AddFriend(Davyd)
-    Dmytro.AddFriend(Davyd)    
-    Dmytro.AddFriend(Dmytro)    
-    Dmytro.AddFriend(Yaroslav)    
+    Dmytro.AddFriend(Davyd)
+    Dmytro.AddFriend(Dmytro)
+    Dmytro.AddFriend(Yaroslav)
 
     Ganna = TPerson('Ganna', False)
     Ganna.Age = 20
     Yaroslav.AddFriend(Ganna)
     Yaroslav.Marry(Ganna)
     Ganna.Marry(Yaroslav)
-    Ganna.Marry(Yaroslav)    
+    Ganna.Marry(Yaroslav)
 
     Vlad = TPerson('Vlad', True)
     Vlad.Age = 50
