@@ -3,6 +3,7 @@ Python lesson
 Simple pygame example
 VladVons@gmail.com, 2022.02.11
 
+ToDo:
 https://www.geeksforgeeks.org/collision-detection-in-pygame/
 '''
 
@@ -60,6 +61,11 @@ class TGame():
             Obj = random.choice(Classes)(self)
             self.Objects.append(Obj)
 
+    def ShowText(self, aPos: tuple, aMsg: str):
+        Font = pygame.font.SysFont('Comic Sans MS', 50)
+        TextR = Font.render(aMsg, False, GetColorRand())
+        self.ScreenSurf.blit(TextR, aPos)
+
     def Run(self):
         Bullet = TBullet(self)
         Bullet.Init()
@@ -103,6 +109,13 @@ class TGame():
                 Obj.MoveHorCycle()
                 Obj.CheckToEat()
                 Obj.Draw()
+
+            if (len(self.Objects) == 0):
+                self.ShowText((100, 100), 'Super !')
+                pygame.display.update()
+                pygame.time.delay(1000)
+                self.Objects_Add(self.Options.ObjInc)
+                self.Objects_SetRand()
 
             pygame.display.update()
 
@@ -174,8 +187,13 @@ class TBullet(TEllipse):
                (MidY > aObj.Y) and (MidY < aObj.Y + aObj.Height)
 
     def Explose(self):
+        Bullet = TBullet(self.Game)
+        Bullet.Init()
+        Bullet.Speed += 1
+        self.Game.Bullets.append(Bullet)
+
         self.Init()
-        self.Game.Objects_Add(self.Game.Options.ObjInc * 10)
+        self.Game.Objects_Add(self.Game.Options.ObjInc)
         self.Game.Objects_SetRand()
 
     def CheckToEat(self):
@@ -185,12 +203,10 @@ class TBullet(TEllipse):
                 self.Height += Obj.Height / 4
                 self.Color = Obj.Color
 
-                if (self.Speed > 0):
+                if (self.Speed > 1):
                     self.Speed -= 0.25
                 else:
-                    self.Speed = 0
                     self.Explose()
-                    print('Im too big !')
 
                 self.Game.Objects.remove(Obj)
 
