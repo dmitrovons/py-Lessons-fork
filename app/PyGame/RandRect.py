@@ -2,6 +2,8 @@
 Python lesson
 Simple pygame example
 VladVons@gmail.com, 2022.02.11
+
+https://www.geeksforgeeks.org/collision-detection-in-pygame/
 '''
 
 import pygame
@@ -33,6 +35,7 @@ class TGame():
     def __init__(self, aOptions: TOptions):
         self.Options: TOptions = aOptions
         self.Objects: list[TObj] = []
+        self.Bullets: list[TBullet] = []
 
     def Init(self):
         pygame.init()
@@ -59,10 +62,9 @@ class TGame():
 
     def Run(self):
         Bullet = TBullet(self)
-        Bullet.Width = 10
-        Bullet.Height = 10
-        Bullet.Y = 200
-        Bullet.Speed = 6
+        Bullet.Init()
+        self.Bullets.append(Bullet)
+
 
         self.ScreenSurf.fill(self.Options.BgColor)
         pygame.display.update()
@@ -97,9 +99,10 @@ class TGame():
                 Obj.OnKey(Keys)
                 Obj.Draw()
 
-            Bullet.MoveHorCycle()
-            Bullet.CheckToKill()
-            Bullet.Draw()
+            for Obj in self.Bullets:
+                Obj.MoveHorCycle()
+                Obj.CheckToEat()
+                Obj.Draw()
 
             pygame.display.update()
 
@@ -153,23 +156,41 @@ class TEllipse(TObj):
 
 
 class TBullet(TEllipse):
+    def Init(self):
+        self.Width = 50
+        self.Height = 5
+        self.Y = 200
+        self.Speed = 6
+
     def MoveHorCycle(self):
         self.X += self.Speed
         if (self.X > self.Game.Options.ScreenWidth + self.Width):
             self.X = -self.Width
-            self.Y = random.randint(50, self.Game.Options.ScreenHeight - 50)
+            self.Y = random.randint(int(self.Height), int(self.Game.Options.ScreenHeight - self.Height))
 
-    def CheckToKill(self):
+    def IsCollision(self, aObj: TObj ) -> bool:
+        MidY = self.Y + self.Height / 2
+        return (self.X > aObj.X) and (self.X < aObj.X + aObj.Width) and \
+               (MidY > aObj.Y) and (MidY < aObj.Y + aObj.Height)
+
+    def Explose(self):
+        self.Init()
+        self.Game.Objects_Add(self.Game.Options.ObjInc * 10)
+        self.Game.Objects_SetRand()
+
+    def CheckToEat(self):
         for Obj in list(self.Game.Objects):
-            if (self.X > Obj.X) and (self.X < Obj.X + Obj.Width) and \
-               (self.Y > Obj.Y) and (self.Y < Obj.Y + Obj.Height):
+            if (self.IsCollision(Obj)):
                 self.Width += Obj.Width / 4
                 self.Height += Obj.Height / 4
+                self.Color = Obj.Color
 
-                if (self.Speed >= 0.25):
+                if (self.Speed > 0):
                     self.Speed -= 0.25
                 else:
-                    self.Color = (255, 0, 0)
+                    self.Speed = 0
+                    self.Explose()
+                    print('Im too big !')
 
                 self.Game.Objects.remove(Obj)
 
