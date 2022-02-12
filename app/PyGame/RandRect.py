@@ -240,4 +240,8 @@ def Run():
 
     Game.Run()
 
+
+print('Key "r" - randomize')
+print('Key "t" - add objects')
+ 
 Run()
