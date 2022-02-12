@@ -7,6 +7,7 @@ ToDo:
 https://www.geeksforgeeks.org/collision-detection-in-pygame/
 '''
 
+
 import pygame
 import random
 
