@@ -8,7 +8,7 @@ a6 = 'Saturday'
 
 #print(a0, a1, a3, a4, a5, a6)
 
-#Sunday-Monday-Tuesday ...
+Sunday-Monday-Tuesday ...
 #print('%s-%s-%s-%s-%s-%s-%s' % (a0,a1,a2,a3,a4,a5,a6))
 #print(a0 + '-' +  a1 + '-' + a2 + '-' + a3 + '-' + a4 + '-' + a5 + '-' + a6)
 #print(a0 + '-' + a1 + '-%s-%s' % (a2, a3))
