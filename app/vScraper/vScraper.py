@@ -16,9 +16,17 @@ class TScraper():
         self.MaxConn = aMaxConn
         self.TotalData = 0
 
+        Pos = aUrl.find('//')
+        self.FileLog = 's_' + aUrl[Pos + 2:] + '.log'
+
+    def WriteDB(self, aData: str):
+        print(aData)
+        with open(self.FileLog, 'a+') as FileH:
+            FileH.write(aData + '\n')
+
     def _AddItem(self, aList: list, aUrl: str):
         if (not aUrl in aList):
-            aList.append(aUrl)
+            aList.append(aUrl + '\n')
 
     def _GetHeader(self):
         Res = {
@@ -46,6 +54,8 @@ class TScraper():
                    (not Href in Hrefs) and \
                    (not Ext in ['.zip', '.jpg']):
                     self._AddItem(Hrefs, Href)
+
+        #self.WriteDB(aUrl)
         await self._ParseRecurs(Hrefs, aDepth + 1)
 
     async def _Fetch(self, aUrl: str, aSession, aSemaph, aDepth: int):
@@ -55,7 +65,7 @@ class TScraper():
                     Data = await Response.read()
                     if (Data):
                         await self._GrabHref(aUrl, Data, aDepth)
-            except aiohttp.ClientConnectorError as E:
+            except (aiohttp.ClientConnectorError, aiohttp.ClientError) as E:
                 self.Url.remove(aUrl)
                 self._AddItem(self.UrlErr, aUrl)
                 print('Error', E, aUrl)
@@ -68,7 +78,8 @@ class TScraper():
             for Url in aUrl:
                 if (not Url in self.Url):
                     self.Url.append(Url)
-                    print('---x1. Depth: %d, URLs: %d, Total: %dM, URL: %s' % (aDepth, len(self.Url), self.TotalData / 1000000, Url))
+                    Msg = 'Depth: %d, URLs: %d, Total: %dM, URL: %s' % (aDepth, len(self.Url), self.TotalData / 1000000, Url)
+                    self.WriteDB(Msg.strip())
 
                     Task = asyncio.create_task(self._Fetch(Url, Session, Semaph, aDepth))
                     Tasks.append(Task)
@@ -83,7 +94,8 @@ class TMain():
         async with aSemaph:
             Scraper = TScraper(aUrl, 8)
             await Scraper._ParseRecurs([aUrl], 0)
-            print('url: %s, count: %d, size: %d' % (Url, len(Scraper.Url), Scraper.TotalData))
+            Msg = 'url: %s, count: %d, size: %d' % (Url, len(Scraper.Url), Scraper.TotalData)
+            Scraper.WriteDB(Msg)
 
     async def CreateTasks(self, aUrl: list, aMaxTasks: int):
         Semaph = asyncio.Semaphore(aMaxTasks)
@@ -95,13 +107,17 @@ class TMain():
                 Tasks.append(Task)
         await asyncio.gather(*Tasks)
 
-    def Run(self, aUrl: list, aMaxTasks: int = 3):
+    def Run(self, aUrl: list, aMaxTasks: int = -1):
+        if (aMaxTasks == -1):
+            aMaxTasks = len(aUrl)
+
         Task = self.CreateTasks(aUrl, aMaxTasks)
         asyncio.run(Task)
 
 
-Url = ['https://www.neotec.ua', 'https://largo.com.ua', 'http://oster.com.ua', 'http://bereka-radio.com.ua', 'https://kaluna.te.ua']
+#`Url = ['https://www.neotec.ua', 'https://largo.com.ua', 'http://oster.com.ua', 'http://bereka-radio.com.ua', 'https://kaluna.te.ua']
+Url = ['https://kaluna.te.ua']
 StartT = time.time()
 Main = TMain()
-Main.Run(Url, 5)
+Main.Run(Url)
 print('duration (s)', round(time.time() - StartT, 2))
