@@ -21,7 +21,8 @@ class TScraper():
         self.UrlErr = []
         self.MaxConn = aMaxConn
         self.TotalData = 0
-        self.Queue = asyncio.Queue()
+        #self.Queue = asyncio.Queue()
+        self.Lock = asyncio.Lock()
 
         Dir = 'log'
         if (not os.path.isdir(Dir)): 
@@ -82,7 +83,8 @@ class TScraper():
                 Log(self.FileLog, '_Fetch_B %s %s' % (E, aUrl))
 
     async def _ParseRecurs(self, aUrl: list, aDepth: int):
-            #async with aSemaph:
+            #async with self.Lock:
+            #print('_ParseRecurs')
             async with aiohttp.ClientSession(headers=self._GetHeader()) as Session:
                 Semaph = asyncio.Semaphore(self.MaxConn)
 
