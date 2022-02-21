@@ -1,14 +1,14 @@
-#!/usr/bin/micropython
+#!/usr/bin/python3
 
 import time
-import uasyncio as asyncio
-from uasyncio import Event
+import asyncio
 
-event = Event()
+event = asyncio.Event()
 
 async def waiter():
     print('Waiting for event')
     await event.wait()  # Pause here until event is set
+
     print('Waiter got event.')
     event.clear()  # Flag caller and enable re-use of the event
 

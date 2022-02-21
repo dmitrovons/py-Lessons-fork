@@ -21,8 +21,10 @@ class TScraper():
         self.UrlErr = []
         self.MaxConn = aMaxConn
         self.TotalData = 0
+        self.UrlCnt = 0
+
         #self.Queue = asyncio.Queue()
-        self.Lock = asyncio.Lock()
+        #self.Lock = asyncio.Lock()
 
         Dir = 'log'
         if (not os.path.isdir(Dir)): 
@@ -44,6 +46,7 @@ class TScraper():
         return Res
 
     async def _GrabHref(self, aUrl: str, aData: str, aDepth: int):
+        self.UrlCnt += 1
         self.TotalData += len(aData)
 
         Hrefs = []
@@ -79,8 +82,8 @@ class TScraper():
                 self.Url.remove(aUrl)
                 self._AddItem(self.UrlErr, aUrl)
                 Log(self.FileLog, '_Fetch_A %s %s' % (E, aUrl))
-            except Exception as E:
-                Log(self.FileLog, '_Fetch_B %s %s' % (E, aUrl))
+            #except Exception as E:
+            #    Log(self.FileLog, '_Fetch_B %s %s' % (E, aUrl))
 
     async def _ParseRecurs(self, aUrl: list, aDepth: int):
             #async with self.Lock:
@@ -92,7 +95,7 @@ class TScraper():
                 for Url in aUrl:
                     if (not Url in self.Url):
                         self.Url.append(Url)
-                        Msg = 'Depth:%d, URLs:%d, Total:%dM, Tasks:%d, URL:%s' % (aDepth, len(self.Url), self.TotalData / 1000000, len(asyncio.Task.all_tasks()), Url)
+                        Msg = 'Depth:%d, Url found:%d, Url done:%d, Total:%dM, Tasks:%d, URL:%s' % (aDepth, len(self.Url), self.UrlCnt, self.TotalData / 1000000, len(asyncio.all_tasks()), Url)
                         Log(self.FileLog, Msg.strip())
 
                         Task = asyncio.create_task(self._Fetch(Url, Session, Semaph, aDepth))
@@ -131,8 +134,9 @@ class TMain():
 
 
 def Test1():
-    Hosts = ['https://kaluna.te.ua']
+    #Hosts = ['https://kaluna.te.ua']
     #Hosts = ['http://bereka-radio.com.ua']
+    Hosts = ['https://largo.com.ua']
     #Hosts = ['https://www.neotec.ua', 'https://largo.com.ua', 'http://oster.com.ua', 'http://bereka-radio.com.ua', 'https://kaluna.te.ua']
     StartT = time.time()
     Main = TMain()

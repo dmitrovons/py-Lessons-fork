@@ -1,8 +1,7 @@
-#!/usr/bin/micropython
+#!/usr/bin/python3
 
 import time
-import uasyncio as asyncio
-from uasyncio import Event
+import asyncio
 
 
 async def waiter(event):

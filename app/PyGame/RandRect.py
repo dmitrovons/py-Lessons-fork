@@ -196,7 +196,10 @@ class TBullet(TEllipse):
         self.X += self.Speed
         if (self.X > self.Game.Options.ScreenWidth + self.Width):
             self.X = -self.Width
-            self.Y = random.randint(int(self.Height), int(self.Game.Options.ScreenHeight - self.Height))
+
+            Pos = [int(self.Height), int(self.Game.Options.ScreenHeight - self.Height)]
+            if (Pos[0] > Pos[1]): Pos[1], Pos[0] = Pos[0], Pos[1]
+            self.Y = random.randint(*Pos)
 
     def IsCollision(self, aObj: TObj ) -> bool:
         MidY = self.Y + self.Height / 2

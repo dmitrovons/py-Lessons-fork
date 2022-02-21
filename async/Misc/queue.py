@@ -6,6 +6,8 @@ import time
 
 
 async def worker(name, queue):
+    print('Start', name)
+
     Cnt = 0
     while True:
         print(f'worker loop begin {name}')
@@ -21,12 +23,15 @@ async def worker(name, queue):
 
         print(f'worker loop end {name} waits {sleep_for:.2f}')
 
-        #Cnt += 1
-        #if (Cnt % 2 == 0):
+        Cnt += 1
+        if (Cnt % 2 == 0):
             #queue.put_nowait(3)
-            #queue.put_nowait(2)
+            pass
+    print('Finish', name)
 
 async def main():
+    global IsRun
+
     # Create a queue that we will use to store our "workload".
     queue = asyncio.Queue()
     print('max size', queue.maxsize)
@@ -51,6 +56,7 @@ async def main():
     total_slept_for = time.monotonic() - started_at
 
     # Cancel our worker tasks.
+    print('cancel task')
     for task in tasks:
         task.cancel()
 
