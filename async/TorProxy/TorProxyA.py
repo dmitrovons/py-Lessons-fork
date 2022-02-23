@@ -19,12 +19,18 @@ from aiohttp_socks import ProxyConnector
 
 class TTorProxy():
     def __init__(self):
-        self.Url = 'http://icanhazip.com'
+        #self.Url = 'http://icanhazip.com'
+        self.Url = 'https://brain.com.ua/ukr'
+
         self.Proxy = 'socks5://localhost:9050'
         self.Headers = {
             'Accept': '*/*',
             'User-Agent': 'Mozilla/5.5 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0'
         }
+
+    def GetConnector(self, aProxy: bool):
+        if (aProxy):
+            return ProxyConnector.from_url(self.Proxy)
 
     async def _Worker(self, aSession, aTaskId: int):
         async with aSession.get(self.Url) as Response:
@@ -32,12 +38,7 @@ class TTorProxy():
             print('TaskId: %d, Status: %d, Data: %s' % (aTaskId, Response.status, Data.decode().strip()))
 
     async def Run(self, aProxy: bool = True, aTaskCnt: int = 10):
-        if (aProxy):
-            Connector = ProxyConnector.from_url(self.Proxy)
-        else:
-            Connector = None
-
-        async with aiohttp.ClientSession(headers=self.Headers, connector=Connector) as Session:
+        async with aiohttp.ClientSession(headers=self.Headers, connector=self.GetConnector(aProxy)) as Session:
             Tasks = [asyncio.create_task(self._Worker(Session, i)) for i in range(aTaskCnt)]
             await asyncio.gather(*Tasks)
 
@@ -45,7 +46,7 @@ def Main():
     Duration = []
     for IsProxy in [False, True]:
         TimeStart = time.time()
-        asyncio.run(TTorProxy().Run(IsProxy, 100))
+        asyncio.run(TTorProxy().Run(IsProxy, 10))
         TimeDur = time.time() - TimeStart
         Duration.append(TimeDur)
 
