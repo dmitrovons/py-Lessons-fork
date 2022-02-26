@@ -18,7 +18,6 @@ class TDownload():
             FileH.write(aData)
 
     def Fetch(self, aUrl: str, aCnt: int):
-        print('Fetch', aCnt)
         Data = requests.get(aUrl, allow_redirects=True).content
         self.WriteFile('File_%03d.jpeg' % aCnt, Data)
 
