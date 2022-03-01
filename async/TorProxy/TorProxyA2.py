@@ -17,7 +17,7 @@ from datetime import datetime
 class TBase():
     def __init__(self):
         self.TaskCnt = 5
-        self.PrevIP = None
+        self.PrevIP = []
         self.Url = 'http://icanhazip.com'
         self.Proxy = 'socks5://localhost:9050'
         self.Headers = {
@@ -38,12 +38,14 @@ class TBase():
         return aData.decode().strip()
 
     async def Fetch(self, aSession, aTaskId: int):
+        Name = self.__class__.__name__
+
         async with aSession.get(self.Url) as Response:
             Data = await Response.read()
             IP = self.GetIP(Data)
-            if (IP != self.PrevIP):
-                self.PrevIP = IP
-                Name = self.__class__.__name__
+            print(Name, aTaskId, IP)
+            if (not IP in self.PrevIP):
+                self.PrevIP.append(IP)
                 Info = '%s, %s, TaskId:%2d, Status:%d, IP:%15s' % (datetime.now().strftime('%H:%M:%S'), Name, aTaskId, Response.status, IP)
                 self.WriteFile(Name + '.log', Info)
         await asyncio.sleep(10)
@@ -55,7 +57,7 @@ class TTorProxy_1(TBase):
             try:
                 await self.Fetch(aSession, aTaskId)
             except Exception as E:
-                print('Exception', E, self.Url)
+                print('Err_1', E, self.Url)
     
     async def Run(self):
         async with aiohttp.ClientSession(headers=self.Headers, connector=self.GetConnector(True)) as Session:
@@ -70,7 +72,7 @@ class TTorProxy_2(TBase):
                 while (True):
                     await self.Fetch(Session, aTaskId)
         except Exception as E:
-            print('Exception', E, self.Url)
+            print('Err_2', E, self.Url)
 
     async def Run(self):
             Tasks = [asyncio.create_task(self._Worker(i)) for i in range(self.TaskCnt)]
@@ -84,7 +86,7 @@ class TTorProxy_3(TBase):
                 async with aiohttp.ClientSession(headers=self.Headers, connector=self.GetConnector(True)) as Session:
                     await self.Fetch(Session, aTaskId)
             except Exception as E:
-                print('Exception', E, self.Url)
+                print('Err_3', E, self.Url)
 
     async def Run(self):
             Tasks = [asyncio.create_task(self._Worker(i)) for i in range(self.TaskCnt)]

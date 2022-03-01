@@ -1,38 +1,45 @@
 #!/usr/bin/python3
 
-import time
 import asyncio
 
 
-async def waiter(event):
-    print('waiting for it ...')
-    await event.wait()
-    print('... got it!')
+class TEvent():
+    def __init__(self, aParent):
+        #self.Parent = aParent
+        self.Event = asyncio.Event()
 
-    #async with event: Error
-    #    print('... got it 2!')
+    async def Waiter1(self, aId):
+        while True:
+            print('Waiter A', aId)
+            await self.Event.wait()
+            print('Waiter B', aId)
 
-async def main():
-    # Create an Event object.
-    event = asyncio.Event()
+            await asyncio.sleep(1)
 
-    # Spawn a Task to wait until 'event' is set.
-    waiter_task = asyncio.create_task(waiter(event))
+    async def Waiter2(self):
+        Cnt = 0
 
-    #print('time.sleep(2) A')
-    #time.sleep(2)
-
-    # Sleep for 1 second and set the event.
-    print('A sleep 3')
-    await asyncio.sleep(3)
-    event.set()
-
-    #print('time.sleep(2) B')
-    #time.sleep(2)
-
-    # Wait until the waiter task is finished.
-    await waiter_task
+        while True:
+            Cnt += 1
+            if (Cnt % 2 == 0): 
+                print('Waiter2 set')
+                self.Event.set()
+            else:
+                print('Waiter2 clear')
+                self.Event.clear()
+            await asyncio.sleep(5)
 
 
+class TMain():
+    def __init__(self):
+        self.Event = asyncio.Event()
 
-asyncio.run(main())
+    async def Main(self):
+        Event = TEvent(self)
+        asyncio.create_task(Event.Waiter2())
+        Tasks = [asyncio.create_task(Event.Waiter1(i)) for i in range(3)]
+        await asyncio.gather(*Tasks)
+
+
+asyncio.run(TMain().Main())
+
