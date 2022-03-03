@@ -21,6 +21,7 @@ def Main(aFile: str):
                         Words[Word] = 1
                     else:
                         Words[Word] = Count + 1
+
     WordsSorted = sorted(Words.items(), reverse=True, key=lambda item: item[1])
     for Word in WordsSorted[:50]:
         print(Word)
