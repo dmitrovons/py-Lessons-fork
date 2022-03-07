@@ -5,16 +5,19 @@ python async tor proxy example
 VladVons@gmail.com
 2022.02.23
 
-sudo apt-get install tor python3-stem privoxy
+sudo apt-get install tor
 pip3 install asyncio aiohttp aiohttp-socks
 
 https://gist.github.com/DusanMadar/8d11026b7ce0bce6a67f7dd87b999f6b
 '''
 
 import time
+import random
 import asyncio
 import aiohttp
 from aiohttp_socks import ProxyConnector
+
+#print(parse_proxy_url('socks5://localhost:9050'))
 
 
 class TTorProxy():
@@ -22,7 +25,7 @@ class TTorProxy():
         self.Url = 'http://icanhazip.com'
         #self.Url = 'https://ipinfo.io/json'
 
-        self.Proxy = 'socks5://localhost:9050'
+        self.Proxy = ['socks5://localhost:9050']
         self.Headers = {
             'Accept': '*/*',
             'User-Agent': 'Mozilla/5.5 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0'
@@ -30,7 +33,8 @@ class TTorProxy():
 
     def GetConnector(self, aProxy: bool):
         if (aProxy):
-            return ProxyConnector.from_url(self.Proxy)
+            Proxy = random.choice(self.Proxy)
+            return ProxyConnector.from_url(Proxy)
 
     async def _Worker(self, aSession, aTaskId: int):
         try:
@@ -58,4 +62,4 @@ def Main(aTaskCnt: int):
         print()
     print('Duration', Duration)
 
-Main(10)
+Main(5)
