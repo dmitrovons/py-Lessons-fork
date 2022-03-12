@@ -12,6 +12,7 @@ import os
 import asyncio
 import aiohttp
 import time
+import random
 from datetime import datetime
 from random import randint
 from urllib.parse import urlparse
@@ -35,11 +36,9 @@ class THeader():
         self.Browser = ['Chrome/83', 'Firefox/77', 'Opera/45']
 
     def Get(self):
-        OS = self.OS[randint(0, len(self.OS) - 1)]
-        Browser = self.Browser[randint(0, len(self.Browser)) - 1]
         return {
             'Accept': '*/*',
-            'User-Agent': 'Mozilla/5.0 (%s) %s' % (OS, Browser)
+            'User-Agent': 'Mozilla/5.0 (%s) %s' % (random.choice(self.OS), random.choice(self.Browser))
         }
 
 
@@ -48,6 +47,8 @@ class THttpScraper():
         self.Root = aRoot
         self.MaxTask = aMaxTask
         self.Sleep = aSleep
+
+        self.Timeout = 30
 
         self.Url = []
         self.UrlCnt = 0
@@ -63,6 +64,12 @@ class THttpScraper():
     async def DoGrab(self, aUrl: str, aSoup):
         pass
 
+    @staticmethod
+    def IsMimeApp(aUrl: str) -> bool:
+        Path = urlparse(aUrl).path
+        Ext = os.path.splitext(Path)[1]
+        return Ext in ['.zip', '.rar', '.xml', '.pdf', '.jpg', '.jpeg', '.png', '.gif']
+
     async def _GrabHref(self, aUrl: str, aData: str, aTaskId: int):
         self.TotalData += len(aData)
         self.UrlCnt += 1
@@ -71,34 +78,36 @@ class THttpScraper():
         for A in Soup.find_all("a"):
             Href = A.get("href", '').strip().rstrip('/')
             if (Href):
-                Path = urlparse(Href).path
-                Ext = os.path.splitext(Path)[1]
-
                 if (Href.startswith('/')):
                     Href = self.Root + Href
 
                 if (Href.startswith(self.Root)) and \
                    (not Href.startswith('#')) and \
                    (not Href in self.Url) and \
-                   (not Ext in ['.zip', '.jpg', '.png']):
+                   (not self.IsMimeApp(Href)):
                     self.Url.append(Href)
                     self.Queue.put_nowait(Href)
         await self.DoGrab(aUrl, Soup, aTaskId)
 
     async def _Worker(self, aSession, aTaskId: int):
         Loops = 0
-        while (self.IsRun) and (not self.Queue.empty()):
-            await asyncio.sleep(0.05) # for first time Queue.empty()
+        TimeStart = time.time()
+        self.IsRun = True
+        while (self.IsRun):
             await asyncio.sleep(self.Sleep)
-            Url = await self.Queue.get()
+            if (self.Queue.empty()) and (time.time() - TimeStart > self.Timeout):
+                break
 
             try:
+                Url = await asyncio.wait_for(self.Queue.get(), timeout = self.Timeout)
                 async with aSession.get(Url) as Response:
                     Data = await Response.read()
                     if (Response.status == 200):
                         await self._GrabHref(Url, Data, aTaskId)
             except (aiohttp.ClientConnectorError, aiohttp.ClientError) as E:
-                    self.Log.Print('_Worker_A %s %s' % (E, Url))
+                self.Log.Print('Err:%s %s' % (Url, E))
+            except asyncio.TimeoutError:
+                self.Log.Print('Err:%s, queue timeout %d' % (self.UrlRoot, self.Timeout))
             finally:
                 self.Queue.task_done()
     
@@ -108,14 +117,10 @@ class THttpScraper():
     async def Parse(self):
         Header = THeader()
         async with aiohttp.ClientSession(headers=Header.Get()) as Session:
-            Tasks = []
-            for i in range(self.MaxTask):
-                Task = asyncio.create_task(self._Worker(Session, i))
-                Tasks.append(Task)
-
+            Tasks = [asyncio.create_task(self._Worker(Session, i)) for i in range(self.MaxTask)]
             self.Log.Print('URL:%s, Tasks:%d' % (self.Root, len(asyncio.all_tasks())))
-            self.IsRun = True
             await asyncio.gather(*Tasks)
+            self.IsRun = False
             self.Log.Print('Done')
 
 
