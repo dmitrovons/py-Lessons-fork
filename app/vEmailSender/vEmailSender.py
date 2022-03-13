@@ -16,10 +16,10 @@ from datetime import datetime
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-        
+
 
 class TLog():
-    def __init__(self, aFile):
+    def __init__(self, aFile: str):
         self.File = aFile
         
     def Print(self, aMsg: str):
@@ -60,9 +60,11 @@ class TMail():
             Part['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(File)
             EMsg.attach(Part)
 
-        self.Log.Print('MailTo:%s, Done:%d' % (aMailTo, self.CntDone))
         Smtp.pop('from', None)
         await aiosmtplib.send(EMsg, **Smtp)
+
+        self.Log.Print('MailTo:%s, Done:%d' % (aMailTo, self.CntDone))
+
 
     async def _Worker(self, aTaskId: int):
         Loop = 0
@@ -78,10 +80,10 @@ class TMail():
                 await self.Send(EMail, aTaskId)
                 self.CntDone += 1
             except aiosmtplib.errors.SMTPDataError as E:
-                self.Log.Print('Err smtp:%s' % (E))
+                self.Log.Print('Err:%s, %s' % (EMail, E))
                 await asyncio.sleep(ConfSleep * 10)
             except Exception as E:
-                self.Log.Print('Err:%s' % (E))
+                self.Log.Print('Err:%s, %s' % (EMail, E))
             finally:
                 self.Queue.task_done()
 
@@ -91,12 +93,15 @@ class TMail():
             self.Log.Print('Start')
 
             ConfMaxTasks = self.ConfOption.get('MaxTasks', 5)
-            Tasks = [asyncio.create_task(self._Worker(i)) for i in range(ConfMaxTasks)]
-            await asyncio.gather(*Tasks)
-            self.IsRun = False
+            ConfLoops = self.ConfOption.get('MaxLoops', 1)
+            for i in range(ConfLoops):
+                Tasks = [asyncio.create_task(self._Worker(i)) for i in range(ConfMaxTasks)]
+                await asyncio.gather(*Tasks)
+                self.IsRun = False
 
 
 if (__name__ == '__main__'):
     print(__version__)
+
     File = 'vEmail_A.json'
     asyncio.run(TMail(File).Run())
