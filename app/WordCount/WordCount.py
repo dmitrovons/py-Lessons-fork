@@ -1,6 +1,3 @@
-#!/usr/bin/python3 -B
-
-
 '''
 Python lesson
 File word counter 

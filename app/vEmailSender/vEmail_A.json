@@ -7,7 +7,7 @@
         {"from": "ua0976646510@gmail.com", "hostname": "smtp.gmail.com", "username": "ua0976646510", "password": "19710819", "port": 465, "use_tls": true}
     ],
     "MailData": [
-        {"subj": "Spam. Hello World !", "body": "This is Mail body"}
+        {"subj": "Spam. Hello World !", "body": "This is Mail body", "file":["vEmailSender.py"]}
     ],
     "MailTo": [
         "VladVons@gmail.com"

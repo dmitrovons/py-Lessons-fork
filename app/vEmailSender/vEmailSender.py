@@ -7,26 +7,28 @@ VladVons@gmail.com
 
 __version__ = '1.0.1'
 
-
+import os
 import asyncio
 import aiosmtplib
 import random
 import json
-from email.message import EmailMessage
 from datetime import datetime
-
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
         
+
 class TLog():
     def __init__(self, aFile):
         self.File = aFile
         
     def Print(self, aMsg: str):
-        Msg = '%s, %s' % (datetime.now().strftime('%H:%M:%S'), aMsg)
+        Msg = '%s, %s' % (datetime.now().strftime('%y/%m/%d-%H:%M:%S'), aMsg)
         print(Msg)
-        
+
         with open(self.File, 'a+') as FileH:
             FileH.write(Msg + '\n')
-    
+
 
 class TMail():
     def __init__(self, aFile: str):
@@ -46,11 +48,17 @@ class TMail():
         Smtp = random.choice(self.Conf['Smtp']).copy()
         MailData = random.choice(self.Conf['MailData'])
 
-        EMsg = EmailMessage()
+        EMsg = MIMEMultipart()
         EMsg["From"] = Smtp.get('from')
         EMsg["To"] = aMailTo
         EMsg["Subject"] = MailData.get('subj') + ' ' + str(self.CntDone)
-        EMsg.set_content(MailData.get('body'))
+        EMsg.attach(MIMEText(MailData.get('body')))
+
+        for File in MailData.get('file', []):
+            with open(File, 'rb') as F:
+                Part = MIMEApplication(F.read(), Name=os.path.basename(File))
+            Part['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(File)
+            EMsg.attach(Part)
 
         self.Log.Print('MailTo:%s, Done:%d' % (aMailTo, self.CntDone))
         Smtp.pop('from', None)
@@ -59,7 +67,7 @@ class TMail():
     async def _Worker(self, aTaskId: int):
         Loop = 0
         self.IsRun = True
-        ConfSleep = self.Conf.get('Sleep', 3)
+        ConfSleep = self.ConfOption.get('Sleep', 3)
 
         await asyncio.sleep(aTaskId)
         while (self.IsRun) and (not self.Queue.empty()):
@@ -81,7 +89,9 @@ class TMail():
 
     async def Run(self):
             self.Log.Print('Start')
-            Tasks = [asyncio.create_task(self._Worker(i)) for i in range(self.ConfOption.get('MaxTasks', 5))]
+
+            ConfMaxTasks = self.ConfOption.get('MaxTasks', 5)
+            Tasks = [asyncio.create_task(self._Worker(i)) for i in range(ConfMaxTasks)]
             await asyncio.gather(*Tasks)
             self.IsRun = False
 
