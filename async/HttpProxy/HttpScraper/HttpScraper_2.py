@@ -155,14 +155,14 @@ class TMain():
 
 
 def Test1():
-    #Hosts = ['https://kaluna.te.ua']
+    Hosts = ['https://kaluna.te.ua']
     #Hosts = ['http://oster.com.ua']
     #Hosts = ['http://bereka-radio.com.ua']
     #Hosts = ['https://largo.com.ua']
     #Hosts = ['https://www.beurer.com']
     #Hosts = ['https://compx.com.ua/ua']
     #Hosts = ['https://hard.rozetka.com.ua']
-    Hosts = ['https://brain.com.ua/ukr']
+    #Hosts = ['https://brain.com.ua/ukr']
 
     #Hosts = ['https://www.neotec.ua', 'https://largo.com.ua', 'http://oster.com.ua', 'http://bereka-radio.com.ua', 'https://kaluna.te.ua', 'https://www.beurer.com', 'https://rozetka.com.ua', 'https://www.moyo.ua', 'https://220-v.com.ua', 'https://amperia.com.ua', 'https://telemart.ua/ua', 'https://compx.com.ua/ua']
     StartT = time.time()

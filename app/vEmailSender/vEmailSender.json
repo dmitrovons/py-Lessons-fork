@@ -1,7 +1,7 @@
 {
     "Option": {
         "MaxTasks": 5,
-        "MaxLoops" : 1,
+        "MaxLoops" : 10,
         "Sleep": 3
     },
     "Smtp": [
@@ -9,7 +9,7 @@
             "from": "ua0976646510@gmail.com", 
             "hostname": "smtp.gmail.com", 
             "username": "ua0976646510", 
-            "password": "19710819", 
+            "password": "xxx", 
             "port": 465, 
             "use_tls": true
         }

@@ -103,5 +103,5 @@ class TMail():
 if (__name__ == '__main__'):
     print(__version__)
 
-    File = 'vEmail_A.json'
+    File = 'vEmailSender.json'
     asyncio.run(TMail(File).Run())
