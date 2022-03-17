@@ -19,12 +19,14 @@ class TPortScan():
     _CntAll = 0
     _CntOpen = 0
 
-    def GetIpRange_1(self, aCidr: str) -> list:
+    @staticmethod
+    def GetIpRange_1(aCidr: str) -> list:
         import ipaddress
         Res = [str(IP) for IP in ipaddress.IPv4Network(aCidr)]
         return Res
 
-    def GetIpRange(self, aCidr: str) -> list:
+    @staticmethod
+    def GetIpRange(aCidr: str) -> list:
         import socket
         import struct
 
@@ -44,7 +46,8 @@ class TPortScan():
         #Uniq = set(Res)
         return Res
 
-    def FilterOpened(self, aList: list, aValue: bool) -> list:
+    @staticmethod
+    def FilterOpened(aList: list, aValue: bool) -> list:
         return [Item for Item in aList if Item[2] == aValue]
 
     async def CheckPort(self, aIp: str, aPort: int) -> bool:
@@ -70,8 +73,8 @@ class TPortScan():
             Opened = await self.CheckPort(aIp, aPort)
             return (aIp, aPort, Opened)
 
-    async def Main(self, aHosts: list, aPorts: list):
-        print('Main. create tasks')
+    async def CheckRange(self, aHosts: list, aPorts: list):
+        print('CheckRange. create tasks')
         Sem = asyncio.Semaphore(self.MaxConn)
         Tasks = []
         for Host in aHosts:
@@ -79,7 +82,19 @@ class TPortScan():
                 Task = asyncio.create_task(self.CheckPortSem(Sem, Host, Port))
                 Tasks.append(Task)
 
-        print('Main. launch tasks', len(Tasks))
+        print('CheckRange. launch tasks', len(Tasks))
+        Res = await asyncio.gather(*Tasks)
+        return Res
+
+    async def CheckList(self, aHosts: list):
+        print('CheckList. create tasks')
+        Sem = asyncio.Semaphore(self.MaxConn)
+        Tasks = []
+        for Item in aHosts:
+            Arr = Item.strip().split(':')
+            if (len(Arr) == 2):
+                Task = asyncio.create_task(self.CheckPortSem(Sem, Arr[0], Arr[1]))
+                Tasks.append(Task)
         Res = await asyncio.gather(*Tasks)
         return Res
 
@@ -89,7 +104,7 @@ def SpeedTest():
 
     PortScan = TPortScan()
     StartT = time.time()
-    Task = PortScan.Main(Hosts, Ports)
+    Task = PortScan.CheckRange(Hosts, Ports)
     Res = asyncio.run(Task)
     Res = PortScan.FilterOpened(Res, True)
     for Item in Res:
@@ -103,15 +118,22 @@ def Scan():
     #Hosts = ['192.168.11.131', '192.168.11.132', '192.168.11.133', '192.168.11.134', '192.168.11.135', '192.168.11.136']
     Hosts = ['192.168.2.131', '192.168.2.132']
 
-    while True:
-        PortScan = TPortScan()
-        Task = PortScan.Main(Hosts, Ports)
+    PortScan = TPortScan()
+    Task = PortScan.CheckRange(Hosts, Ports)
+    Res = asyncio.run(Task)
+    Res = PortScan.FilterOpened(Res, True)
+    for Item in Res:
+        print(Item)
+
+def ScanFromFile(aFile: str):
+    PortScan = TPortScan()
+    with open(aFile, 'r') as F:
+        Task = PortScan.CheckList(F.readlines())
         Res = asyncio.run(Task)
-        Res = PortScan.FilterOpened(Res, True)
-        for Item in Res:
-            print(Item)
-        print('done')
-        time.sleep(3)
+        for Host, Port, Opened in Res:
+            print('%s:%s %s' % (Host, Port, Opened))
 
 #SpeedTest()
-Scan()
+#Scan()
+ScanFromFile('proxies.txt')
+
