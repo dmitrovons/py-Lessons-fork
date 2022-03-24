@@ -1,3 +1,4 @@
+'''
 generate and show multiplication table of 4
 
 4x2=08
@@ -8,3 +9,4 @@ generate and show multiplication table of 4
 4x7=28
 4x8=32
 4x9=36
+'''

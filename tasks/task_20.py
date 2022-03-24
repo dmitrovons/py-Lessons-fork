@@ -1,3 +1,5 @@
+'''
+
 show table of adding using words list
 ['null', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']   
 
@@ -6,3 +8,4 @@ one + one = two
 two + two = four
 three + three = six
 four + four = eight
+'''
