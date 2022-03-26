@@ -53,8 +53,15 @@ Deb()
 
 Package()
 {
+  pipreqs $NamePy
+
   python3 -B setup.py sdist --formats=gztar
   rm -R $NamePy.egg-info
+}
+
+Install()
+{ 
+  pip3 install pipreqs 
 }
 
 
@@ -62,4 +69,5 @@ Package()
 case $1 in
     Deb)       "$1" "$2" "$3" ;;
     Package)   "$1" "$2" "$3" ;;
+    Install)   "$1" "$2" "$3" ;;
 esac
