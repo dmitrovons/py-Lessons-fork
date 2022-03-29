@@ -58,7 +58,7 @@ class THttpScraper():
         self.Queue = asyncio.Queue()
         self.Queue.put_nowait(aRoot)
 
-        FileLog = '%s_%s.log' % (self.__class__.__name__, urlparse(aRoot).hostname)
+        FileLog = '%s_%s.log' % ('L', urlparse(aRoot).hostname)
         self.Log = TLog(FileLog)
 
     async def DoGrab(self, aUrl: str, aSoup):
@@ -94,7 +94,8 @@ class THttpScraper():
         TimeStart = time.time()
         self.IsRun = True
         while (self.IsRun):
-            await asyncio.sleep(self.Sleep)
+            Sleep = random.randint(int(self.Sleep / 2), self.Sleep)
+            await asyncio.sleep(Sleep)
             if (self.Queue.empty()) and (time.time() - TimeStart > self.Timeout):
                 break
 
@@ -104,13 +105,14 @@ class THttpScraper():
                     Data = await Response.read()
                     if (Response.status == 200):
                         await self._GrabHref(Url, Data, aTaskId)
+                self.Queue.task_done()
             except (aiohttp.ClientConnectorError, aiohttp.ClientError) as E:
                 self.Log.Print('Err:%s %s' % (Url, E))
             except asyncio.TimeoutError:
-                self.Log.Print('Err:%s, queue timeout %d' % (self.UrlRoot, self.Timeout))
-            finally:
-                self.Queue.task_done()
-    
+                self.Log.Print('Err:%s, queue timeout %d' % (self.Root, self.Timeout))
+            except Exception as E:
+                self.Log.Print('Err:%s %s' % (Url, E))
+
             Loops += 1
         self.Log.Print('_Worker %d done. Loops %d' % (aTaskId, Loops))
 
@@ -133,7 +135,7 @@ class THttpScraperEx(THttpScraper):
 class TMain():
     async def _Scheduler(self, aUrl: str, aSemaph):
         async with aSemaph:
-            Scraper = THttpScraperEx(aUrl, 16, 1)
+            Scraper = THttpScraperEx(aUrl, 1, 10)
             await Scraper.Parse()
 
     async def CreateTasks(self, aUrl: list, aMaxTasks: int):
@@ -155,19 +157,16 @@ class TMain():
 
 
 def Test1():
-    Hosts = ['https://kaluna.te.ua']
-    #Hosts = ['http://oster.com.ua']
-    #Hosts = ['http://bereka-radio.com.ua']
-    #Hosts = ['https://largo.com.ua']
-    #Hosts = ['https://www.beurer.com']
-    #Hosts = ['https://compx.com.ua/ua']
-    #Hosts = ['https://hard.rozetka.com.ua']
-    #Hosts = ['https://brain.com.ua/ukr']
+    #Hosts = ['https://kaluna.te.ua']
+    #File = 'hotline_1.txt'
+    File = 'hotline_min.txt'
+    with open(File, 'r') as F:
+        Hosts = F.read().splitlines()
 
-    #Hosts = ['https://www.neotec.ua', 'https://largo.com.ua', 'http://oster.com.ua', 'http://bereka-radio.com.ua', 'https://kaluna.te.ua', 'https://www.beurer.com', 'https://rozetka.com.ua', 'https://www.moyo.ua', 'https://220-v.com.ua', 'https://amperia.com.ua', 'https://telemart.ua/ua', 'https://compx.com.ua/ua']
     StartT = time.time()
     Main = TMain()
     Main.Run(Hosts)
     print('duration (s)', round(time.time() - StartT, 2))
 
 Test1()
+
