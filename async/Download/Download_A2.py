@@ -51,6 +51,6 @@ class TDownload():
 
 
 StartT = time.time()
-Task = TDownload().LoadFromFile('hotline_1.txt')
+Task = TDownload().LoadFromFile('hotline_min.txt')
 asyncio.run(Task)
 print('async duration (s)', round(time.time() - StartT, 2))
