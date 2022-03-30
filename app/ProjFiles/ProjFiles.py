@@ -15,10 +15,16 @@ import shutil
 
 class TProjFiles():
     def __init__(self):
+        self.Filter = '.*\.log|.*\.pyc'
         self.Files = []
 
+    def _Filter(self, aFile: str) -> bool:
+        if (self.Filter):
+            Find = re.findall(self.Filter, aFile)
+            return bool(Find)
+
     def _FileAdd(self, aFile: str):
-        if (os.path.exists(aFile)) and (not aFile in self.Files):
+        if (os.path.exists(aFile)) and (not aFile in self.Files) and (not self._Filter(aFile)):
             self.Files.append(aFile)
             self.FileLoad(aFile)
 
