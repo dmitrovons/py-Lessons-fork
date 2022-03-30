@@ -24,26 +24,30 @@ class TProjFiles():
 
     def _Find(self, aFileP: str , aFilesA: list, aFilesB: list = []):
         for FileA in aFilesA:
+            FileA = FileA.strip()
             for FileB in aFilesB + ['__init__']:
-                self._FileAdd(FileA.strip() + '/' + FileB.strip() + '.py')
-                self._FileAdd(FileA.strip() + '.py')
-                self._FileAdd(os.path.dirname(aFileP) + FileA.strip() + '.py')
+                self._FileAdd(FileA + '/' + FileB.strip() + '.py')
+                self._FileAdd(FileA + '.py')
+                self._FileAdd(os.path.dirname(aFileP) + FileA + '.py')
 
     def FileLoad(self, aFile: str):
         Patt1 = 'import\s+(.*)'
         Patt2 = 'from\s+(.*)\s+import\s+(.*)'
         #Patt3 = '__import__\((.*)\)'
 
-        with open(aFile, 'r') as F:
-            for Line in F.readlines():
-                Find = re.findall(Patt1 + '|' + Patt2, Line)
-                if (Find) and (not Line.startswith('#')):
-                    F1, F2, F3 = [i.replace('.', '/') for i in Find[0]]
-                    if (F1):
-                        self._Find(aFile, F1.split(','))
-                    else:
-                        self._Find(aFile, F2.split(','), F3.split(','))
-        self._FileAdd(aFile)
+        if (os.path.exists(aFile)):
+            with open(aFile, 'r') as F:
+                for Line in F.readlines():
+                    Find = re.findall(Patt1 + '|' + Patt2, Line)
+                    if (Find) and (not Line.startswith('#')):
+                        F1, F2, F3 = [i.replace('.', '/') for i in Find[0]]
+                        if (F1):
+                            self._Find(aFile, F1.split(','))
+                        else:
+                            self._Find(aFile, F2.split(','), F3.split(','))
+            self._FileAdd(aFile)
+        else:
+            print('File not found', aFile)
 
     def FilesLoad(self, aFiles: list):
         for File in aFiles:
